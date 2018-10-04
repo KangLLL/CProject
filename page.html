@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.5.4/react.js"></script>
+<html>
+<head>
+	<title></title>
+</head>
+<body>
+	<div id='display'></div>
+	<script type="text/javascript">
+		class MyClass extends React.Component{
+			render() { return React.createElement("h1", {}, "Hello");}
+		}
+
+		ReactDOM.render(React.createElement(MyClass, {}), document.getElementById("display"));
+	</script>
+</body>
+</html>
