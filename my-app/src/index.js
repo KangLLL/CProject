@@ -104,7 +104,7 @@ class Game extends React.Component {
         </div>
         <div className="game-info">
           <div>{status}</div>
-          <ol>{moves}</ol>
+          <ol>{moves.slice(0, this.state.stepNumber)}</ol>
         </div>
       </div>
     );
