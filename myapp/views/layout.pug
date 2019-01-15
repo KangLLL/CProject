@@ -9,7 +9,12 @@ html
   body
     nav.navbar.bg-dark
       .navbar.float-left
-        container.nav-tabs
-          a.h3.text-white.nav-link(href="") Exchanging Currency
-          a.h3.text-white.nav-link(href="") Sales Taxes
+        container
+          ul.nav.nav-pills
+            li.nav-item
+              a.h4.text-white.nav-link(href="/search") Search Item
+            li.nav-item
+              a.h4.text-white.nav-link(href="") Exchanging Currency
+            li.nav-item
+              a.h4.text-white.nav-link(href="") Sales Taxes
     block content
