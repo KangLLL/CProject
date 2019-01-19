@@ -25,23 +25,26 @@ function getIPhonePrice(model, callback) {
 
         if (carrier == 'Unlocked' || key == 'china') {
           productURLs.push('https://www.apple.com/' + $(ele).parent().attr('href'));
-          // var infos = $(ele).parent().attr('href').split('/');var size = infos[infos.length - 1].split('-')[0];
-          // if (!(size in result)) {
-          //   result[size] = {};
-          // }
-          // if (!(model in result[size])) {
-          //   result[size][model] = price;
-          // }
         }
       });
 
 
-      var pattern = '(*) (\d+GB)*';
-      var test = 'iPhone 7 Plus 128GB Black Unlocked - Apple';
+      const modelPattern = /(.*) (\d+GB)/;
+      const pricePattern = /[\$|RMB ]*(\d{1,3}(,\d{3})*(.\d+))/;
 
       async.forEach(productURLs, (val, cb)=>{
         rp(val).then((html) => {
-          console.log($.load(html)("title").text());
+          var title = $("title", html).text().trimLeft().trimRight();
+          var infos = title.match(modelPattern);
+          var model = infos[1];
+          var cap = infos[2];
+          if (!(model in result)) {
+            result[model] = {};
+          }
+          if (!(cap in result[model])) {
+            var prices = $(".as-price-currentprice", html).text().trimLeft().trimRight().match(pricePattern);
+            result[model][cap] = prices[1];
+          }
           cb();
         })
         .catch (err=>{
