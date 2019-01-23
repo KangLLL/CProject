@@ -7,11 +7,12 @@
   },
   "dependencies": {
     "async": "^2.6.1",
+    "axios": "^0.18.0",
     "body-parser": "^1.18.3",
     "cheerio": "^1.0.0-rc.2",
     "cookie-parser": "~1.4.3",
     "debug": "~2.6.3",
-    "express": "~4.15.2",
+    "express": "^4.16.4",
     "morgan": "^1.9.1",
     "pug": "~2.0.0-beta11",
     "puppeteer": "^1.11.0",
