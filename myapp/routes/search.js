@@ -9,8 +9,8 @@ router.get('/', function(req, res, next) {
 });
 
 router.post('/', function(req, res, next) {
-  apple.getIPhonePrice('7', (err, usPrices, chinaPrices)=>{
-    console.log('price');
+  apple.getIPhonePrice('7', (err, usPrices, chinaPrices) => {
+    res.render('result', { title: 'Search Result', usPrice: usPrices, chnPrice: chinaPrices });
   });
 });
 
