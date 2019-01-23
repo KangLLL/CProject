@@ -1,4 +1,4 @@
-const rp = require('request-promise');
+const axios = require('axios');
 const $ = require('cheerio');
 
 var async = require('async');
@@ -28,12 +28,13 @@ function getIPhonePrice(model, callback) {
         }
       });
 
-
       const modelPattern = /(.*) (\d+GB)/;
       const pricePattern = /[\$|RMB ]*(\d{1,3}(,\d{3})*(.\d+))/;
 
       async.forEach(productURLs, (val, cb)=>{
-        rp(val).then((html) => {
+        axios.get(val)
+        .then(res => {
+          var html = res.data;
           var title = $("title", html).text().trimLeft().trimRight();
           var infos = title.match(modelPattern);
           var model = infos[1];
@@ -47,7 +48,7 @@ function getIPhonePrice(model, callback) {
           }
           cb();
         })
-        .catch (err=>{
+        .catch(err => {
           console.log(err.message);
           cb(err);
         })
