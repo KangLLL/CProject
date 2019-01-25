@@ -16,8 +16,9 @@ function getIPhonePrice(model, callback) {
 
     var productURLs = [];
     
-    rp(url).then((html) => {
-      
+    axios.get(url)
+    .then(res => {
+      var html = res.data;
       $('.details', html).each((i, ele)=> {
         var carrier = $('.carrier-logos', $(ele)).text();
         var model = $('.dimensionCapacity', $(ele)).text();

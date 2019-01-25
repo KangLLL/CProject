@@ -3,6 +3,8 @@ var router = express.Router();
 
 var apple = require('../modules/apple');
 
+var exc = require('../modules/exchange');
+
 /* Product Search */
 router.get('/', function(req, res, next) {
   res.render('search', { title: 'Search Item' });
