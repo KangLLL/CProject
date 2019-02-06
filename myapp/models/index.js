@@ -1,9 +1,22 @@
-var express = require('express');
-var router = express.Router();
+var db = require('mysql2-db');
+var dbcfg = require('../config/db.json');
+var async = require('async');
 
-/* GET home page. */
-router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Price Comparison System' });
-});
+var models = {
+  ExchangeRate: require('./exchange-rate'),
+  init: (callback) => {
+    if (!callback) callback = () => { };
 
-module.exports = router;
+    async.series(
+      [
+        (callback) => { models.ExchangeRate.init(dbcfg, models, callback); },
+      ], (err) => {
+        if (err) return callback(err);
+        callback();
+      }
+    );
+  },
+  shutdown: (callback) => { db.curtains(callback); }
+}
+
+module.exports = models;
