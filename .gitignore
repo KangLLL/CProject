@@ -3,6 +3,9 @@
 # dependencies
 /myapp/node_modules
 
+# config
+/myapp/config/db.json
+
 # misc
 .DS_Store
 
