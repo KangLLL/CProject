@@ -1,7 +1,7 @@
 use capstone;
-DROP TABLE IF EXISTS `exchagerate`;
-CREATE TABLE `exchagerate` (
-  `ID` bigint(20) NOT NULL,
+DROP TABLE IF EXISTS `exchangerate`;
+CREATE TABLE `exchangerate` (
+  `ID` bigint(20) NOT NULL AUTO_INCREMENT,
   `RATE` decimal(10,6) DEFAULT NULL,
   `DATE` datetime DEFAULT NULL,
   `TYPE` tinyint(1) DEFAULT 0,
