@@ -7,7 +7,13 @@ var exc = require('../modules/exchange');
 
 /* Product Search */
 router.get('/', function(req, res, next) {
-  res.render('search', { title: 'Search Item' });
+  exc.convertUSDToCNY(699, (err, result)=>{
+    if (err) console.log(err);
+    console.log(result);
+    res.render('search', { title: 'Search Item' });
+  });
+
+  
 });
 
 router.post('/', function(req, res, next) {

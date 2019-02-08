@@ -21,15 +21,15 @@ function constructURL(names, parameters) {
 }
 
 function getExchangeRate(type, callback) {
-  models.ExchangeRate.loadLatestByType(type , (err, results) => {
-    if (err || results.length == 0 || date.isDaysAfter(results[0].DATE, 1)) {
+  models.ExchangeRate.loadLatestByType(type , (err, result) => {
+    if (err || !result || date.isDaysAfter(result.DATE, 1)) {
       var base = type == USDToCNYType ? USDSymbol : CNYSymbol;
       var to = type == USDToCNYType ? CNYSymbol : USDSymbol;
       axios.get(constructURL([ baseParameter,toParameter ], [ base, to ]))
         .then(res => {
           models.ExchangeRate.insert(res.data.rates[to], res.data.date, type, (err, result) => {
             if (err) callback(err);
-            else callback(null, res.date.rates[to]);
+            else callback(null, res.data.rates[to]);
           });
         })
         .catch(err => {
@@ -37,26 +37,36 @@ function getExchangeRate(type, callback) {
         });
     }
     else {
-      callback(null, results[0].RATE);
+      callback(null, result.RATE);
     }
   });
 }
 
 function getRateFromUSDToCNY(callback) {
-  this.getExchangeRate(USDToCNYType, callback);
+  getExchangeRate(USDToCNYType, callback);
 }
 
 function getRateFromCNYToUSD(callback) {
-  this.getExchangeRate(CNYToUSDType, callback);
+  getExchangeRate(CNYToUSDType, callback);
 }
 
-function convertUSDToCNY() {
+function convertUSDToCNY(price, callback) {
+  getRateFromUSDToCNY((err, res) => {
+    if (err) callback(err);
+    else callback(null, price * res);
+  });
 }
 
-function contertCNYToUSD() {
+function convertCNYToUSD(price, callback) {
+  getRateFromCNYToUSD((err, res) => {
+    if (err) callback(err);
+    else callback(null, price * res);
+  })
 }
 
 module.exports = {
   getRateFromUSDToCNY: getRateFromUSDToCNY,
-  getRateFromCNYToUSD: getRateFromCNYToUSD
+  getRateFromCNYToUSD: getRateFromCNYToUSD,
+  convertUSDToCNY: convertUSDToCNY,
+  convertCNYToUSD: convertCNYToUSD
 }
