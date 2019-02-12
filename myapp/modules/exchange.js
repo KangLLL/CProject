@@ -1,6 +1,7 @@
 const axios = require('axios');
 const models = require('../models');
 const date = require('./date');
+const cfg = require('../config/config.json');
 
 const apiURL = 'https://api.exchangeratesapi.io/latest';
 const baseParameter = 'base';
@@ -22,7 +23,7 @@ function constructURL(names, parameters) {
 
 function getExchangeRate(type, callback) {
   models.ExchangeRate.loadLatestByType(type, (err, result) => {
-    if (err || !result || date.isDaysAfter(result.DATE, 1)) {
+    if (err || !result || date.isDaysAfter(result.DATE, cfg.exchangeRateRefreshDay)) {
       var base = type == USDToCNYType ? USDSymbol : CNYSymbol;
       var to = type == USDToCNYType ? CNYSymbol : USDSymbol;
       axios.get(constructURL([baseParameter, toParameter], [base, to]))
