@@ -9,7 +9,7 @@ function init(_cfg, _models, callback) {
 
 function loadByName(name, callback) {
   db.stage(cfg)
-    .query('select * from product where name like "%?%"', [name.toLowerCase()])
+    .query('select * from product where name like ?', ['%' + name + '%'])
     .finale((err, results) => {
       if (err) return callback(err);
       else return callback(null, results);

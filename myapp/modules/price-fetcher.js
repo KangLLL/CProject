@@ -3,10 +3,13 @@ const models = require('../models')
 
 function getPrice(product, callback) {
   models.Product.loadByName(product, (err, result) => {
-    
-  })
+    console.log(err);
+    console.log(result.length);
+
+    callback(err, result);
+  });
 }
 
 module.exports = {
-  getIPhonePrice: getIPhonePrice
+  getPrice: getPrice
 }

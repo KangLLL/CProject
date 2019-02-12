@@ -1,25 +1,19 @@
 var express = require('express');
 var router = express.Router();
 
-var apple = require('../modules/apple');
-
-var exc = require('../modules/exchange');
+var fetcher = require('../modules/price-fetcher');
 
 /* Product Search */
 router.get('/', function(req, res, next) {
-  exc.convertUSDToCNY(699, (err, result)=>{
-    if (err) console.log(err);
-    console.log(result);
+  fetcher.getPrice('iphone', (err, result) => {
     res.render('search', { title: 'Search Item' });
   });
-
-  
 });
 
 router.post('/', function(req, res, next) {
-  apple.getIPhonePrice('7', (err, usPrices, chinaPrices) => {
-    res.render('result', { title: 'Search Result', usPrice: usPrices, chnPrice: chinaPrices });
-  });
+  // apple.getIPhonePrice('7', (err, usPrices, chinaPrices) => {
+  //   res.render('result', { title: 'Search Result', usPrice: usPrices, chnPrice: chinaPrices });
+  // });
 });
 
 module.exports = router;
