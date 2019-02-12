@@ -14,18 +14,18 @@ function constructURL(names, parameters) {
   if (names.length == 0) return apiURL;
   var result = apiURL + '?';
   for (var i = 0; i < names.length; i++) {
-    result = result + names[i] + '=' + parameters[i] + '&'; 
+    result = result + names[i] + '=' + parameters[i] + '&';
   }
 
   return result.substring(0, result.length - 1);
 }
 
 function getExchangeRate(type, callback) {
-  models.ExchangeRate.loadLatestByType(type , (err, result) => {
+  models.ExchangeRate.loadLatestByType(type, (err, result) => {
     if (err || !result || date.isDaysAfter(result.DATE, 1)) {
       var base = type == USDToCNYType ? USDSymbol : CNYSymbol;
       var to = type == USDToCNYType ? CNYSymbol : USDSymbol;
-      axios.get(constructURL([ baseParameter,toParameter ], [ base, to ]))
+      axios.get(constructURL([baseParameter, toParameter], [base, to]))
         .then(res => {
           models.ExchangeRate.insert(res.data.rates[to], res.data.date, type, (err, result) => {
             if (err) callback(err);
