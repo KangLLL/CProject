@@ -20,6 +20,7 @@ CREATE TABLE `product` (
   `DEPTH` decimal(10, 2) DEFAULT NULL,
   `WEIGHT` decimal(10, 2) DEFAULT NULL,
   PRIMARY KEY(`ID`),
+  CONSTRAINT name_unique UNIQUE (`NAME`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 DROP TABLE IF EXISTS `price`;
