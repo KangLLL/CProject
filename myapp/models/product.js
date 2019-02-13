@@ -16,6 +16,15 @@ function loadByName(name, callback) {
     });
 }
 
+function insertProduct(name) {
+  db.stage(cfg)
+    .execute('insert into product(NAME) values (?)', [name])
+    .finale((err, results) => {
+      if (err) return callback(err);
+      else return callback(null, results[0]);
+    });
+}
+
 function loadLatestPriceByProductId(pid, callback) {
   db.stage(cfg)
     .query('select USPRICE, CHPRICE, DATE from price where PRODUCTID=? order by date desc limit 1', [pid])
@@ -37,6 +46,7 @@ function insertPrice(pid, usprice, chprice, date, callback) {
 module.exports = {
   init: init,
   loadByName: loadByName,
+  insertProduct: insertProduct,
   loadLatestPriceByProductId: loadLatestPriceByProductId,
   insertPrice: insertPrice
 };

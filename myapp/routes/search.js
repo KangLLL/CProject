@@ -5,12 +5,13 @@ var fetcher = require('../modules/price-fetcher');
 
 /* Product Search */
 router.get('/', function(req, res, next) {
-  fetcher.getPrice('iphone', (err, result) => {
-    res.render('search', { title: 'Search Item' });
-  });
+  res.render('search', { title: 'Search Item' });
 });
 
 router.post('/', function(req, res, next) {
+  fetcher.getProduct(req.body.name, (err, result) => {
+  });
+
   // apple.getIPhonePrice('7', (err, usPrices, chinaPrices) => {
   //   res.render('result', { title: 'Search Result', usPrice: usPrices, chnPrice: chinaPrices });
   // });

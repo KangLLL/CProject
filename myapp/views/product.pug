@@ -1,0 +1,16 @@
+extends layout
+
+block content
+  .container
+    .row
+      .col-sm
+      .col-sm
+        form(method="POST", action="./search")
+          .form-group
+            label(for="name") Please select which product you want to compare
+            - products.forEach(funtion(product) {
+              input(type="radio", name="product",value=product.id).form-control #{product.name}
+            - });
+            <hr>
+            button.btn.btn-primary(type="submit") Search
+      .col-sm
