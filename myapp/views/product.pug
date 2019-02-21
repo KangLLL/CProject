@@ -5,11 +5,14 @@ block content
     .row
       .col-sm
       .col-sm
-        form(method="POST", action="./search")
+        form(method="POST", action="./search/product")
           .form-group
-            label(for="name") Please select which product you want to compare
-            - products.forEach(funtion(product) {
-              input(type="radio", name="product",value=product.id).form-control #{product.name}
+            label(for="product") Please select which product you want to compare
+            - products.forEach(function(product) {
+              br
+              br
+              input(type="radio", name="product", value=product.ID, style="margin-right: 10px").btn.btn-outline-info
+              label(for="product") #{product.NAME}
             - });
             <hr>
             button.btn.btn-primary(type="submit") Search

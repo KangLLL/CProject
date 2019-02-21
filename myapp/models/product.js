@@ -16,7 +16,7 @@ function loadByName(name, callback) {
     });
 }
 
-function insertProduct(name) {
+function insertProduct(name, callback) {
   db.stage(cfg)
     .execute('insert into product(NAME) values (?)', [name])
     .finale((err, results) => {
