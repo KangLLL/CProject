@@ -3,15 +3,13 @@ const $ = require('cheerio');
 
 var async = require('async');
 
-function getIPhonePrice(model, callback) {
-  const modelDict = { 7: 'iphone-7', 8: 'iphone-8' };
-  const urls = { us: 'https://www.apple.com/shop/buy-iphone/', china: 'https://www.apple.cn/shop/buy-iphone/' };
+function getIPhonePrice(usURL, chURL, callback) {
+  const urls = { us: usURL, china: chURL };
 
   var usPrices = {};
   var chinaPrices = {};
 
-  async.forEachOf(urls, (value, key, callback) => {
-    var url = value + modelDict[model];
+  async.forEachOf(urls, (url, key, callback) => {
     var result = key == 'us' ? usPrices : chinaPrices;
 
     var productURLs = [];
