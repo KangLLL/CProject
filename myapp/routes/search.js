@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 
 var fetcher = require('../modules/price-fetcher');
+var exchange = require('../modules/exchange');
 
 /* Product Search */
 router.get('/', function (req, res, next) {
@@ -22,7 +23,7 @@ router.post('/', function (req, res, next) {
   });
 
   router.post('/product', function (req, res, next) {
-    fetcher.getPrice(req.body.product, (err, result) => {
+    fetcher.getPrice(req.body.product, 'CA', (err, result) => {
       if (err) return next(err);
     });
   });

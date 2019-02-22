@@ -38,12 +38,11 @@ function getIPhonePrice(usURL, chURL, callback) {
               var infos = title.match(modelPattern);
               var model = infos[1];
               var cap = infos[2];
-              if (!(model in result)) {
-                result[model] = {};
-              }
-              if (!(cap in result[model])) {
+
+              var name = model + "(" + cap + ")";
+              if (!(name in result)) {
                 var prices = $(".as-price-currentprice", html).text().trimLeft().trimRight().match(pricePattern);
-                result[model][cap] = prices[1];
+                result[name] = { price: prices[1] };
               }
               cb();
             })

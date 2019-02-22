@@ -6,7 +6,7 @@ CREATE TABLE `exchangerate` (
   `DATE` datetime NOT NULL,
   `TYPE` tinyint(1) DEFAULT 0,
   PRIMARY KEY (`ID`), 
-  CONSTRAINT date_unique UNIQUE (`DATE`)
+  CONSTRAINT date_type_unique UNIQUE (`DATE`, `TYPE`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 DROP TABLE IF EXISTS `product`;
@@ -33,5 +33,5 @@ CREATE TABLE `price` (
   PRIMARY KEY(`ID`),
   KEY `IDX_PRICE_PRODUCT` (`PRODUCTID`),
   CONSTRAINT `PRICE_PRODUCT_FK1` FOREIGN KEY (`PRODUCTID`) REFERENCES `product` (`ID`),
-  CONSTRAINT date_unique UNIQUE (`DATE`)
+  CONSTRAINT date_product_unique UNIQUE (`DATE`, `PRODUCTID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;

@@ -2,6 +2,7 @@ const axios = require('axios');
 const models = require('../models');
 const date = require('./date');
 const cfg = require('../config/config.json');
+const async = require('async');
 
 const apiURL = 'https://api.exchangeratesapi.io/latest';
 const baseParameter = 'base';
@@ -65,9 +66,29 @@ function convertCNYToUSD(price, callback) {
   })
 }
 
+function getExchangeRates(callback) {
+  var result = {};
+  async.forEach(['CU', 'UC'], (val, cb) => {
+    if (val == 'CU') getRateFromCNYToUSD((err, res) => {
+      if (err) return cb(err);
+      result['CTU'] = res;
+      cb();
+    });
+    else getRateFromUSDToCNY((err, res) => {
+      if (err) return cb(err);
+      result['UTC'] = res;
+      cb();
+    });
+  }, err => {
+    if (err) return callback(err);
+    callback(null, result);
+  });
+}
+
 module.exports = {
   getRateFromUSDToCNY: getRateFromUSDToCNY,
   getRateFromCNYToUSD: getRateFromCNYToUSD,
+  getExchangeRates: getExchangeRates,
   convertUSDToCNY: convertUSDToCNY,
   convertCNYToUSD: convertCNYToUSD
 }

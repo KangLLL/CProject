@@ -1,7 +1,10 @@
 const apple = require('./apple');
 const date = require('./date');
+const tax = require('./tax');
+const exchange = require('./exchange');
 const models = require('../models');
 const cfg = require('../config/config.json');
+
 
 const iphoneFamily = new Set(['iphone7', 'iphone8']);
 
@@ -24,7 +27,7 @@ function getProduct(product, callback) {
   });
 }
 
-function getPrice(productId, callback) {
+function getPrice(productId, state, callback) {
   models.Product.loadLatestPriceByProductId(productId, (err, result) => {
     if (err) return callback(err);
     if (!result || date.isDaysAfter(result.DATE, cfg.priceRefreshDay)) {
@@ -32,8 +35,17 @@ function getPrice(productId, callback) {
         if (err) return callback(err);
 
         if (iphoneFamily.has(result.NAME)) {
-          apple.getIPhonePrice(result.USURL, result.CHURL, (err, res) => {
-            console.log(res);
+          var info = {};
+          apple.getIPhonePrice(result.USURL, result.CHURL, (err, usPrices, chPrices) => {
+            if (err) return callback(err);
+            usPrices = tax.getTax(usPrices, state);
+            info.usPrices = usPrices;
+            info.chPrices = chPrices;
+            exchange.getExchangeRates((err, res) => {
+              if (err) return callback(err);
+              info.exchangeRate = res;
+              callback(null, info);
+            });
           });
         }
         else {
