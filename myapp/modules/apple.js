@@ -1,9 +1,11 @@
 const axios = require('axios');
+const models = require('../models');
+const date = require('./date');
 const $ = require('cheerio');
 
 var async = require('async');
 
-function getIPhonePrice(usURL, chURL, callback) {
+function getIPhonePrice(productId, usURL, chURL, callback) {
   const urls = { us: usURL, china: chURL };
 
   var usPrices = {};
@@ -42,7 +44,7 @@ function getIPhonePrice(usURL, chURL, callback) {
               var name = model + "(" + cap + ")";
               if (!(name in result)) {
                 var prices = $(".as-price-currentprice", html).text().trimLeft().trimRight().match(pricePattern);
-                result[name] = { price: prices[1] };
+                result[name] = prices[1];
               }
               cb();
             })
@@ -51,7 +53,7 @@ function getIPhonePrice(usURL, chURL, callback) {
               cb(err);
             })
         }, err => {
-          if (err) console.log(err.message);
+          if (err) return callback(err);
           callback();
         });
       })
@@ -60,10 +62,26 @@ function getIPhonePrice(usURL, chURL, callback) {
         callback(err);
       })
   }, err => {
-    if (err) console.log(err.message);
-    callback(err, usPrices, chinaPrices);
+    if (err) return callback(err);
+    storeToDatabase(productId, usPrices, chinaPrices, callback);
   });
+}
 
+function storeToDatabase(productId, usPrices, chPrices, callback) {
+  var time = date.currentDate();
+  async.forEach(Object.keys(usPrices), (key, cb) => {
+    if (chPrices[key]) {
+      models.Product.insertPrice(productId, key, usPrices[key].replace(/,/g,''), chPrices[key].replace(/,/g,''), time, (err, result) => {
+        cb(err);
+      });
+    }
+    else {
+      cb();
+    }
+  }, err => {
+    if (err) return callback(err);
+    callback(null);
+  });
 }
 
 module.exports = {

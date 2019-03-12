@@ -1,5 +1,8 @@
 use capstone;
 DROP TABLE IF EXISTS `exchangerate`;
+DROP TABLE IF EXISTS `price`;
+DROP TABLE IF EXISTS `product`;
+
 CREATE TABLE `exchangerate` (
   `ID` bigint(20) NOT NULL AUTO_INCREMENT,
   `RATE` decimal(10,6) DEFAULT NULL,
@@ -9,7 +12,6 @@ CREATE TABLE `exchangerate` (
   CONSTRAINT date_type_unique UNIQUE (`DATE`, `TYPE`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
-DROP TABLE IF EXISTS `product`;
 CREATE TABLE `product` (
   `ID` bigint(20) NOT NULL AUTO_INCREMENT,
   `NAME` varchar(255) CHARACTER SET latin1 COLLATE latin1_bin NOT NULL,
@@ -23,15 +25,17 @@ CREATE TABLE `product` (
   CONSTRAINT name_unique UNIQUE (`NAME`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
-DROP TABLE IF EXISTS `price`;
+
 CREATE TABLE `price` (
   `ID` bigint(20) NOT NULL AUTO_INCREMENT,
-  `PRODUCTID` bigint(20) NOT NULL,
+  `NAME` varchar(255) CHARACTER SET latin1 COLLATE latin1_bin NOT NULL,
   `USPRICE` decimal(10, 2) DEFAULT NULL,
   `CHPRICE` decimal(10, 2) DEFAULT NULL,
   `DATE` datetime NOT NULL,
+  `PRODUCTID` bigint(20) NOT NULL,
   PRIMARY KEY(`ID`),
-  KEY `IDX_PRICE_PRODUCT` (`PRODUCTID`),
+  KEY `IDX_PRODUCT` (`PRODUCTID`),
+  KEY `IDX_PRODUCT_DATE` (`PRODUCTID`, `DATE`),
   CONSTRAINT `PRICE_PRODUCT_FK1` FOREIGN KEY (`PRODUCTID`) REFERENCES `product` (`ID`),
-  CONSTRAINT date_product_unique UNIQUE (`DATE`, `PRODUCTID`)
+  CONSTRAINT date_product_unique UNIQUE (`DATE`, `NAME`, `PRODUCTID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;

@@ -36,16 +36,16 @@ function insertProduct(name, callback) {
 
 function loadLatestPriceByProductId(pid, callback) {
   db.stage(cfg)
-    .query('select USPRICE, CHPRICE, DATE from price where PRODUCTID=? order by date desc limit 1', [pid])
+    .query('select p.NAME, p.USPRICE, p.CHPRICE, p.DATE from price p where p.PRODUCTID=? AND p.DATE=(select max(pp.DATE) from price pp where pp.PRODUCTID=?)', [pid, pid])
     .finale((err, results) => {
       if (err) return callback(err);
-      callback(null, results[0]);
+      callback(null, results);
     });
 }
 
-function insertPrice(pid, usprice, chprice, date, callback) {
+function insertPrice(pid, name, usprice, chprice, date, callback) {
   db.stage(cfg)
-    .execute('insert into price(USPRICE, CHPRICE, DATE) values(?, ?, ?)', [usprice, chprice, date])
+    .execute('insert into price(NAME, USPRICE, CHPRICE, DATE, PRODUCTID) values(?, ?, ?, ?, ?)', [name, usprice, chprice, date, pid])
     .finale((err, results) => {
       if (err) return callback(err);
       callback(null, results[0]);

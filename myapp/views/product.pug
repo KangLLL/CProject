@@ -1,11 +1,19 @@
 extends layout
+block resource
+  link(rel="stylesheet", href='/stylesheets/loader.css')
 
 block content
+  div(style="display:none")#loader
+    .loader-container
+      .loader
+    .loader-text
+      br
+      p loading...
   .container
     .row
       .col-sm
       .col-sm
-        form(method="POST", action="./search/product")
+        form(method="POST", action="./search/product", onsubmit="$('#loader').show();$('.container').hide();")
           .form-group
             label(for="product") Please select which product you want to compare
             - products.forEach(function(product) {

@@ -1,10 +1,9 @@
 const apple = require('./apple');
 const date = require('./date');
-const tax = require('./tax');
 const exchange = require('./exchange');
 const models = require('../models');
 const cfg = require('../config/config.json');
-
+const taxMap = require("../config/tax.json");
 
 const iphoneFamily = new Set(['iphone7', 'iphone8']);
 
@@ -27,24 +26,29 @@ function getProduct(product, callback) {
   });
 }
 
-function getPrice(productId, state, callback) {
-  models.Product.loadLatestPriceByProductId(productId, (err, result) => {
+function constructPrice(prices, callback) {
+  var info = { prices: prices, tax: taxMap };
+  exchange.getExchangeRates((err, res) => {
     if (err) return callback(err);
-    if (!result || date.isDaysAfter(result.DATE, cfg.priceRefreshDay)) {
+    info.exchangeRate = res;
+    callback(null, info);
+  });
+}
+
+function getPrice(productId, callback) {
+  models.Product.loadLatestPriceByProductId(productId, (err, results) => {
+    if (err) return callback(err);
+    if (!results || !results[0] || date.isDaysAfter(result[0].DATE, cfg.priceRefreshDay)) {
       models.Product.load(productId, (err, result) => {
         if (err) return callback(err);
 
         if (iphoneFamily.has(result.NAME)) {
-          var info = {};
-          apple.getIPhonePrice(result.USURL, result.CHURL, (err, usPrices, chPrices) => {
+          apple.getIPhonePrice(productId, result.USURL, result.CHURL, err => {
             if (err) return callback(err);
-            usPrices = tax.getTax(usPrices, state);
-            info.usPrices = usPrices;
-            info.chPrices = chPrices;
-            exchange.getExchangeRates((err, res) => {
+
+            models.Product.loadLatestPriceByProductId(productId, (err, results) => {
               if (err) return callback(err);
-              info.exchangeRate = res;
-              callback(null, info);
+              constructPrice(results, callback);
             });
           });
         }
@@ -54,7 +58,7 @@ function getPrice(productId, state, callback) {
       });
     }
     else {
-      callback(null, result);
+      constructPrice(results, callback);
     }
   });
 }
