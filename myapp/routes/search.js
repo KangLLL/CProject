@@ -1,10 +1,10 @@
 var express = require('express');
 var router = express.Router();
 
-var fetcher = require('../modules/price-fetcher');
-
 var ama = require('../modules/amazon');
 var jd = require('../modules/jd');
+const exchange = require('../modules/exchange');
+const tax = require("../config/tax.json");
 
 /* Product Search */
 router.get('/', function (req, res, next) {
@@ -12,41 +12,37 @@ router.get('/', function (req, res, next) {
 });
 
 router.post('/', function (req, res, next) {
-  // ama.getPrice(req.body.name, (err, name, price) => {
-  //   console.log(name + ',' + price);
+  return res.render('price', { title: 'Price', prices: { usName: 'iphone', usPrice: 300, chName: 'iphoneCH', chPrice: 2200 }, tax: tax, exchange: { UTC: 6, CTU: 0.167 } });
+});
 
-  //   jd.getPrice(name, err=>{
+  // ama.getPrice(req.body.name, (err, name, price) => {
+  //   if (err) return next(err);
+  //   var info = { keyword: req.body.name, usName: name, usPrice: price };
+
+  //   jd.getPrice(name, (err, name, price) => {
+  //     if (err) return next(err);
+  //     info['chName'] = name;
+  //     info['chPrice'] = price;
+
+  //     exchange.getExchangeRates((err, result) => {
+  //       if (err) return next(err);
+
+  //       res.render('price', { title: 'Price', prices: info, tax: tax, exchange: result });
+  //     });
   //   });
   // });
 
-  var name = 'Apple iPhone 7 (32GB)';
-  jd.getPrice(name, (err, name, price) =>{
-    console.log(err);
-    console.log(name);
-    console.log(price);
+  router.post('/product', function (req, res, next) {
+    fetcher.getPrice(req.body.product, (err, result) => {
+      if (err) return next(err);
+
+      res.render('price', { title: 'Price', prices: result.prices, tax: result.tax, exchange: exchangeRate });
+    });
   });
-});
-// fetcher.getProduct(req.body.name, (err, result) => {
-//   if (err) return next(err);
-//   if (result.length == 1) {
 
-//   }
-//   else {
-//     res.render('product', { products: result });
-//   }
-// });
-
-router.post('/product', function (req, res, next) {
-  fetcher.getPrice(req.body.product, (err, result) => {
-    if (err) return next(err);
-
-    res.render('price', { title: 'Price', prices: result.prices, tax: result.tax, exchange: exchangeRate });
-  });
-});
-
-// apple.getIPhonePrice('7', (err, usPrices, chinaPrices) => {
-//   res.render('result', { title: 'Search Result', usPrice: usPrices, chnPrice: chinaPrices });
-// });
+  // apple.getIPhonePrice('7', (err, usPrices, chinaPrices) => {
+  //   res.render('result', { title: 'Search Result', usPrice: usPrices, chnPrice: chinaPrices });
+  // });
 
 
-module.exports = router;
+  module.exports = router;
