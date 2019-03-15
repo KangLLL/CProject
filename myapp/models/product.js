@@ -18,16 +18,16 @@ function load(id, callback) {
 
 function loadByName(name, callback) {
   db.stage(cfg)
-    .query('select * from product where name like ?', ['%' + name + '%'])
+    .query('select * from product where name=?', [name])
     .finale((err, results) => {
       if (err) return callback(err);
-      callback(null, results);
+      callback(null, results[0]);
     });
 }
 
-function insertProduct(name, callback) {
+function insertProduct(name, chname, callback) {
   db.stage(cfg)
-    .execute('insert into product(NAME) values (?)', [name])
+    .execute('insert into product(NAME, CHNAME) values (?, ?)', [name, chname])
     .finale((err, results) => {
       if (err) return callback(err);
       callback(null, results[0]);
