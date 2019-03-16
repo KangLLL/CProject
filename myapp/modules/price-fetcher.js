@@ -1,69 +1,48 @@
-const apple = require('./apple');
+const ama = require('./amazon');
+const jd = require('./jd');
 const date = require('./date');
-const exchange = require('./exchange');
 const models = require('../models');
 const cfg = require('../config/config.json');
-const taxMap = require("../config/tax.json");
 
-const iphoneFamily = new Set(['iphone7', 'iphone8']);
-
-function getProduct(product, callback) {
-  models.Product.loadByName(product, (err, result) => {
+function getPrices(keyword, callback) {
+  ama.getPrice(keyword, (err, name, price) => {
     if (err) return callback(err);
-
-    if (result.length == 0) {
-      models.Product.insertProduct(product, (err, result) => {
-        if (err) return callback(err);
-        models.Product.loadByName(product, (err, result) => {
+    price = price.replace(/,|\$/g,'');
+    models.Product.loadByNameWithPrice(name, (err, result) => {
+      if (err) return callback(err);
+      if (!result) {
+        jd.getPrice(name, (err, chname, chprice) => {
           if (err) return callback(err);
-          callback(null, result);
-        });
-      });
-    }
-    else {
-      callback(null, result);
-    }
-  });
-}
-
-function constructPrice(prices, callback) {
-  var info = { prices: prices, tax: taxMap };
-  exchange.getExchangeRates((err, res) => {
-    if (err) return callback(err);
-    info.exchangeRate = res;
-    callback(null, info);
-  });
-}
-
-function getPrice(productId, callback) {
-  models.Product.loadLatestPriceByProductId(productId, (err, results) => {
-    if (err) return callback(err);
-    if (!results || !results[0] || date.isDaysAfter(result[0].DATE, cfg.priceRefreshDay)) {
-      models.Product.load(productId, (err, result) => {
-        if (err) return callback(err);
-
-        if (iphoneFamily.has(result.NAME)) {
-          apple.getIPhonePrice(productId, result.USURL, result.CHURL, err => {
+          chprice = chprice.replace(/,|￥/g,'');
+          models.Product.insertProduct(name, chname, (err) => {
             if (err) return callback(err);
-
-            models.Product.loadLatestPriceByProductId(productId, (err, results) => {
+            models.Product.loadByName(name, (err, result) => {
               if (err) return callback(err);
-              constructPrice(results, callback);
+              models.Product.insertPrice(result.ID, price, chprice, date.currentDate(), (err) => {
+                if (err) return callback(err);
+                callback(null, name, price, chname, chprice);
+              });
             });
           });
-        }
-        else {
-          console.log(result.NAME);
-        }
-      });
-    }
-    else {
-      constructPrice(results, callback);
-    }
+        });
+      }
+      else if (!result.USPRICE || date.isDaysAfter(result.DATE, cfg.priceRefreshDay)) {
+        jd.getPrice(name, (err, chname, chprice) => {
+          if (err) return callback(err);
+          chprice = chprice.replace(/,|￥/g,'');
+          models.Product.insertPrice(result.ID, price, chprice, date.currentDate(), (err) => {
+            if (err) return callback(err);
+            callback(null, name, price, chname, chprice);
+          });
+        });
+      }
+      else {
+        callback(null, name, result.USPRICE, result.CHNAME, result.CHPRICE);
+      }
+    });
   });
 }
 
 module.exports = {
-  getProduct: getProduct,
-  getPrice: getPrice
+  getPrices: getPrices
 }

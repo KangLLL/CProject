@@ -25,6 +25,15 @@ function loadByName(name, callback) {
     });
 }
 
+function loadByNameWithPrice(name, callback) {
+  db.stage(cfg)
+    .query('select p.ID as ID, p.NAME, p.CHNAME, p.WIDTH, p.HEIGHT, p.DEPTH, p.WEIGHT, pr.USPRICE, pr.CHPRICE, pr.DATE from product p left outer join price pr on p.ID = pr.PRODUCTID and pr.DATE=(select max(DATE) from price group by PRODUCTID) where p.name=?', [name])
+    .finale((err, results) => {
+      if (err) return callback(err);
+      callback(null, results[0]);
+    });
+}
+
 function insertProduct(name, chname, callback) {
   db.stage(cfg)
     .execute('insert into product(NAME, CHNAME) values (?, ?)', [name, chname])
@@ -43,9 +52,9 @@ function loadLatestPriceByProductId(pid, callback) {
     });
 }
 
-function insertPrice(pid, name, usprice, chprice, date, callback) {
+function insertPrice(pid, usprice, chprice, date, callback) {
   db.stage(cfg)
-    .execute('insert into price(NAME, USPRICE, CHPRICE, DATE, PRODUCTID) values(?, ?, ?, ?, ?)', [name, usprice, chprice, date, pid])
+    .execute('insert into price(USPRICE, CHPRICE, DATE, PRODUCTID) values(?, ?, ?, ?)', [usprice, chprice, date, pid])
     .finale((err, results) => {
       if (err) return callback(err);
       callback(null, results[0]);
@@ -56,6 +65,7 @@ module.exports = {
   init: init,
   load: load,
   loadByName: loadByName,
+  loadByNameWithPrice: loadByNameWithPrice,
   insertProduct: insertProduct,
   loadLatestPriceByProductId: loadLatestPriceByProductId,
   insertPrice: insertPrice

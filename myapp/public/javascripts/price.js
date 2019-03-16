@@ -47,7 +47,6 @@ class PriceTable extends React.Component {
   render() {
     const chPrice = this.props.currency == CHNCURRENCY ? this.props.prices.chPrice : this.props.prices.chPrice * exchangeRate["CTU"];
     const usPrice = this.props.currency == USCURRENCY ? this.props.prices.usPrice : this.props.prices.usPrice * exchangeRate["UTC"];
-
     const tax = usPrice * (states[this.props.state] / 100);
     const difference = (usPrice + tax) - chPrice;
 
