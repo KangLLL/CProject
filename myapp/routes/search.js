@@ -6,6 +6,8 @@ const exchange = require('../modules/exchange');
 const priceFetcher = require('../modules/price-fetcher');
 const tax = require('../config/tax.json');
 
+const jd = require('../modules/jd');
+
 /* Product Search */
 router.get('/', function (req, res, next) {
   res.render('search', { title: 'Search Item' });
