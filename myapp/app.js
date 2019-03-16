@@ -7,6 +7,8 @@ var bodyParser = require('body-parser');
 
 var index = require('./routes/index');
 var search = require('./routes/search');
+var tax = require('./routes/tax');
+var currency = require('./routes/currency');
 var users = require('./routes/users');
 
 var models = require('./models');
@@ -27,6 +29,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', index);
 app.use('/search', search);
+app.use('/tax', tax);
+app.use('/currency', currency);
 app.use('/users', users);
 
 models.init();

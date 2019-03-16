@@ -1,0 +1,15 @@
+extends layout
+
+block content
+  .container
+    table.table.table-striped
+      thead.thead-inverse
+        tr
+          th.cell State
+          th.cell Purchase Tax
+      tbody
+      - Object.keys(states).forEach((state)=>{
+        tr
+          td.cell #{state}
+          td.cell #{states[state]}
+      - })

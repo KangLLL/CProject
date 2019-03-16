@@ -1,0 +1,13 @@
+extends layout
+
+block content
+  .container
+    table.table.table-striped
+      thead.thead-inverse
+        tr
+          th.cell US Dollar -> Chinese Yuan
+          th.cell Chinese Yuan -> US Dollar
+      tbody
+        tr
+          td.cell $1 = ￥#{UTC}
+          td.cell ￥1 = $#{CTU}
