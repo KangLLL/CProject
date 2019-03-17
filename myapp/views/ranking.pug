@@ -1,0 +1,16 @@
+extends layout
+
+block content
+  .container
+    table.table.table-striped
+      thead.thead-inverse
+        tr
+          th.cell #
+          th.cell Name
+          th.cell Profit
+      tbody
+      - rankings.forEach((ranking)=>{
+        tr
+          td.cell #{state}
+          td.cell #{states[state]}
+      - })

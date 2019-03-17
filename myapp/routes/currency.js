@@ -3,7 +3,7 @@ var router = express.Router();
 
 const exchange = require('../modules/exchange');
 
-/* Show Tax */
+/* Show Currency Exchange Rate */
 router.get('/', function (req, res, next) {
   exchange.getExchangeRates((err, result) => {
     if (err) next(err);

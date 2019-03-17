@@ -111,10 +111,4 @@ class PriceComp extends React.Component {
   }
 }
 
-// ReactDOM.render(<CurrencySelect />, document.getElementById("root"));
-// alert(states);
-
-// deleteCookie("pricecurrency");
-// deleteCookie("pricestate");
-
 ReactDOM.render(<PriceComp states={Object.keys(states)} prices={prices} />, document.getElementById("root"));
