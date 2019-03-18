@@ -63,7 +63,7 @@ function insertPrice(pid, usprice, chprice, date, callback) {
 
 function getTopRankingProduct(top, callback) {
   db.stage(cfg)
-    .query('select p.NAME, p.CHNAME, p.WIDTH, p.HEIGHT, p.DEPTH, p.WEIGHT, tep.USPRICE, tep.CHPRICE, (tep.CHPRICE - tep.USPRICE) as profit from product p inner join (select pr.PRODUCTID, pr.USPRICE, pr.CHPRICE from price pr inner join (select PRODUCTID, max(DATE) as DATE from price group by PRODUCTID) tp on pr.PRODUCTID=tp.PRODUCTID and pr.DATE=tp.DATE) tep on tep.PRODUCTID=p.ID order by profit desc limit ?', [top])
+    .query('select p.NAME, p.CHNAME, p.WIDTH, p.HEIGHT, p.DEPTH, p.WEIGHT, tep.USPRICE, tep.CHPRICE, (tep.CHPRICE / tep.USPRICE) as profit from product p inner join (select pr.PRODUCTID, pr.USPRICE, pr.CHPRICE from price pr inner join (select PRODUCTID, max(DATE) as DATE from price group by PRODUCTID) tp on pr.PRODUCTID=tp.PRODUCTID and pr.DATE=tp.DATE) tep on tep.PRODUCTID=p.ID order by profit desc limit ?', [top])
     .finale((err, results) => {
       if (err) return callback(err);
       callback(null, results);

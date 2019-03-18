@@ -30,8 +30,8 @@ class CookieSelect extends React.Component {
 
     return (
       <div className="col-sm-5">
-        <label> {this.props.name} </label>
-        <select name={this.props.name} id={this.props.name} value={this.props.selected} onChange={e => this.props.onChange(e.target.value)}>
+        <label className="mr-sm-2"> {this.props.name} </label>
+        <select className="custom-select mr-sm-2" name={this.props.name} id={this.props.name} value={this.props.selected} onChange={e => this.props.onChange(e.target.value)}>
           {options}
         </select>
       </div>
@@ -45,17 +45,30 @@ class PriceTable extends React.Component {
   }
 
   render() {
-    const chPrice = this.props.currency == CHNCURRENCY ? this.props.prices.chPrice : this.props.prices.chPrice * exchangeRate["CTU"];
-    const usPrice = this.props.currency == USCURRENCY ? this.props.prices.usPrice : this.props.prices.usPrice * exchangeRate["UTC"];
-    const tax = usPrice * (states[this.props.state] / 100);
-    const difference = (usPrice + tax) - chPrice;
-
     const priceSymbol = this.props.currency == CHNCURRENCY ? '￥' : '$';
 
+    const rows = this.props.prices.map((price, step) => {
+      const chPrice = this.props.currency == CHNCURRENCY ? price.chPrice : price.chPrice * exchangeRate["CTU"];
+      const usPrice = this.props.currency == USCURRENCY ? price.usPrice : price.usPrice * exchangeRate["UTC"];
+      const tax = usPrice * (states[this.props.state] / 100);
+      const difference = (usPrice + tax) - chPrice;
+      return (
+        <tr key={step}>
+          {showRowNumber && <th scope='row'> {step + 1} </th>}
+          <td className="cell"> {price.usName} </td>
+          <td className="cell"> {priceSymbol + usPrice.toFixed(2)} + ({this.props.state} tax: {priceSymbol + tax.toFixed(2)}) = {priceSymbol + (usPrice + tax).toFixed(2)} </td>
+          <td className="cell"> {price.chName} </td>
+          <td className="cell"> {priceSymbol + chPrice.toFixed(2)} </td>
+          <td className="cell"> {priceSymbol + difference.toFixed(2)} </td>
+        </tr>
+      );
+    });
+
     return (
-      <table className="table">
-        <thead>
+      <table className="table table-striped">
+        <thead className="thead-inverse">
           <tr>
+            {showRowNumber && <th className='cell'> # </th>}
             <th className="cell">US Name</th>
             <th className="cell">US Price</th>
             <th className="cell">China Name</th>
@@ -64,13 +77,7 @@ class PriceTable extends React.Component {
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td className="cell"> {this.props.prices.usName} </td>
-            <td className="cell"> {priceSymbol + usPrice.toFixed(2)} + ({this.props.state} tax: {priceSymbol + tax.toFixed(2)}) = {priceSymbol + (usPrice + tax).toFixed(2)} </td>
-            <td className="cell"> {this.props.prices.chName} </td>
-            <td className="cell"> {priceSymbol + chPrice.toFixed(2)} </td>
-            <td className="cell"> {priceSymbol + difference.toFixed(2)} </td>
-          </tr>
+          {rows}
         </tbody>
       </table>
     );

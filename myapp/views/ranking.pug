@@ -1,16 +1,16 @@
 extends layout
 
 block content
-  .container
-    table.table.table-striped
-      thead.thead-inverse
-        tr
-          th.cell #
-          th.cell Name
-          th.cell Profit
-      tbody
-      - rankings.forEach((ranking)=>{
-        tr
-          td.cell #{state}
-          td.cell #{states[state]}
-      - })
+  .container#root
+  script(src="https://unpkg.com/react@16/umd/react.development.js" crossorigin)
+  script(src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin)
+  script(src="https://unpkg.com/babel-standalone@6/babel.min.js")
+  
+
+  script.
+    const states = !{JSON.stringify(tax)};
+    const exchangeRate = !{JSON.stringify(exchange)};
+    const prices = !{JSON.stringify(prices)};
+    const showRowNumber = true;
+
+  script(type="text/babel" src="/javascripts/components.js")

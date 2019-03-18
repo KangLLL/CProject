@@ -13,9 +13,10 @@ router.get('/', function (req, res, next) {
 router.post('/', function (req, res, next) {
   priceFetcher.getPrices(req.body.name, (err, name, usprice, chname, chprice) => {
     if (err) return next(err);
+    if (!name) return res.render('no-product', { title: 'No result' });
     exchange.getExchangeRates((err, result) => {
       if (err) return next(err);
-      res.render('price', { title: 'Price', prices: { usName: name, usPrice: parseFloat(usprice), chName: chname, chPrice: parseFloat(chprice) }, tax: tax, exchange: result });
+      res.render('price', { title: 'Price', prices: [{ usName: name, usPrice: parseFloat(usprice), chName: chname, chPrice: parseFloat(chprice) }], tax: tax, exchange: result });
     });
   });
 });
