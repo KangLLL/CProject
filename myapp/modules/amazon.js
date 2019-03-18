@@ -1,5 +1,6 @@
 const axios = require('axios');
 const $ = require('cheerio');
+const utility = require('./utility');
 
 function getPrice(name, callback) {
   var url = 'https://www.amazon.com/s?k=' + name.replace(/ /g, '+');
@@ -7,19 +8,24 @@ function getPrice(name, callback) {
   axios.get(url)
     .then(res => {
       var html = res.data;
-      var name = '';
+      var n = '';
       var price = '';
+      var minDistance = 1000;
+      var top = 5;
       $('.sg-col-inner .sg-col-inner', html).each((i, ele) => {
         if ($('h5 span', $(ele))[0] && $('.a-offscreen', $(ele))[0]) {
+          var temp = $('h5 span', $(ele)).text();
           
-          name = $('h5 span', $(ele)).text();
-          name = name.slice(0, name.indexOf('-') - 1);
-          price = $('.a-offscreen', $(ele)).first().text();
-
-          return false;
+          var dist = utility.editDistance(temp.toLowerCase(), name.toLowerCase());
+          if (dist < minDistance || (dist == minDistance && temp.length < n.length)) {
+            minDistance = dist;
+            price = $('.a-offscreen', $(ele)).first().text();
+            n = temp;
+          }
+          if (--top == 0) return false;
         }
       });
-      callback(null, name, price);
+      callback(null, n, price);
     })
     .catch(err => {
       callback(err, null, null);

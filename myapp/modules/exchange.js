@@ -29,10 +29,15 @@ function getExchangeRate(type, callback) {
       var to = type == USDToCNYType ? CNYSymbol : USDSymbol;
       axios.get(constructURL([baseParameter, toParameter], [base, to]))
         .then(res => {
-          models.ExchangeRate.insert(res.data.rates[to], res.data.date, type, (err, result) => {
-            if (err) callback(err);
-            else callback(null, res.data.rates[to]);
-          });
+          if (!result || res.data.date != date.dateString(result.DATE)) {
+            models.ExchangeRate.insert(res.data.rates[to], res.data.date, type, (err, result) => {
+              if (err) return callback(err);
+              else callback(null, res.data.rates[to]);
+            });
+          }
+          else {
+            callback(null, result.RATE);
+          }
         })
         .catch(err => {
           callback(err);

@@ -11,7 +11,7 @@ function getPrices(keyword, callback) {
     models.Product.loadByNameWithPrice(name, (err, result) => {
       if (err) return callback(err);
       if (!result) {
-        jd.getPrice(name, (err, chname, chprice) => {
+        jd.getPrice(keyword, name, price, (err, chname, chprice) => {
           if (err) return callback(err);
           if (!chname || !chprice) return callback(null, null, null, null, null);
           chprice = chprice.replace(/,|￥/g, '');
@@ -28,7 +28,7 @@ function getPrices(keyword, callback) {
         });
       }
       else if (!result.USPRICE || date.isDaysAfter(result.DATE, cfg.priceRefreshDay)) {
-        jd.getPrice(name, (err, chname, chprice) => {
+        jd.getPrice(keyword, name, price, (err, chname, chprice) => {
           if (err) return callback(err);
           chprice = chprice.replace(/,|￥/g, '');
           models.Product.insertPrice(result.ID, price, chprice, date.currentDate(), (err) => {

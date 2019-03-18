@@ -10,7 +10,12 @@ function currentDate() {
   return dayjs().format('YYYY-MM-DD');
 }
 
+function dateString(date) {
+  return dayjs(date).format('YYYY-MM-DD');
+}
+
 module.exports = {
   isDaysAfter: isDaysAfter,
-  currentDate: currentDate
+  currentDate: currentDate,
+  dateString: dateString
 }
