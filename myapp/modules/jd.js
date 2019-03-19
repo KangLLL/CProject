@@ -35,10 +35,6 @@ function getPrice(keyword, name, price, callback) {
 
           var temp = utility.editDistance(n, name);
 
-          console.log(temp);
-          console.log(n);
-          console.log(name);
-
           if (temp < match || (temp == match && n.length < mName.length)) {
             mPrice = p;
             mName = n;
