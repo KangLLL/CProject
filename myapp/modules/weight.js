@@ -14,5 +14,5 @@ function convertWeight(weight) {
 }
 
 module.exports = {
-  convertWeight: convertWeight;
+  convertWeight: convertWeight
 }
