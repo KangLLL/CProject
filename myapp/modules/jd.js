@@ -1,6 +1,6 @@
 const axios = require('axios');
 const $ = require('cheerio');
-const utility = require('./utility');
+const algorithm = require('./algorithm');
 
 function getPrice(keyword, name, price, callback) {
   // var keys = name.split(' ');
@@ -33,7 +33,7 @@ function getPrice(keyword, name, price, callback) {
 
         if (n.includes(brand) && !n.includes('二手')) {
 
-          var temp = utility.editDistance(n, name);
+          var temp = algorithm.editDistance(n, name);
 
           if (temp < match || (temp == match && n.length < mName.length)) {
             mPrice = p;

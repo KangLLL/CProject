@@ -16,6 +16,7 @@ CREATE TABLE `product` (
   `ID` bigint(20) NOT NULL AUTO_INCREMENT,
   `NAME` varchar(255) CHARACTER SET latin1 COLLATE latin1_bin NOT NULL,
   `CHNAME` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `URL` varchar(255) CHARACTER SET latin1 COLLATE latin1_bin NOT NULL,
   `WIDTH` decimal(10,2) DEFAULT NULL,
   `HEIGHT` decimal(10, 2) DEFAULT NULL,
   `DEPTH` decimal(10, 2) DEFAULT NULL,

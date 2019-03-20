@@ -27,16 +27,25 @@ function loadByName(name, callback) {
 
 function loadByNameWithPrice(name, callback) {
   db.stage(cfg)
-    .query('select p.ID as ID, p.NAME, p.CHNAME, p.WIDTH, p.HEIGHT, p.DEPTH, p.WEIGHT, tep.USPRICE, tep.CHPRICE, tep.DATE from product p left outer join (select pr.PRODUCTID, pr.USPRICE, pr.CHPRICE, pr.DATE from price pr inner join (select PRODUCTID, max(DATE) as DATE from price group by PRODUCTID) tp on pr.PRODUCTID=tp.PRODUCTID and pr.DATE=tp.DATE) tep on tep.PRODUCTID=p.ID where p.name=?', [name])
+    .query('select p.ID as ID, p.NAME, p.CHNAME, p.WIDTH, p.HEIGHT, p.DEPTH, p.WEIGHT, p.URL, tep.USPRICE, tep.CHPRICE, tep.DATE from product p left outer join (select pr.PRODUCTID, pr.USPRICE, pr.CHPRICE, pr.DATE from price pr inner join (select PRODUCTID, max(DATE) as DATE from price group by PRODUCTID) tp on pr.PRODUCTID=tp.PRODUCTID and pr.DATE=tp.DATE) tep on tep.PRODUCTID=p.ID where p.name=?', [name])
     .finale((err, results) => {
       if (err) return callback(err);
       callback(null, results[0]);
     });
 }
 
-function insertProduct(name, chname, callback) {
+function insertProduct(name, chname, url, callback) {
   db.stage(cfg)
-    .execute('insert into product(NAME, CHNAME) values (?, ?)', [name, chname])
+    .execute('insert into product(NAME, CHNAME, URL) values (?, ?, ?)', [name, chname, url])
+    .finale((err, results) => {
+      if (err) return callback(err);
+      callback(null, results[0]);
+    });
+}
+
+function updateWeight(id, weight, callback) {
+  db.stage(cfg)
+    .execute('update product set WEIGHT=? where ID=?', [wight, id])
     .finale((err, results) => {
       if (err) return callback(err);
       callback(null, results[0]);
@@ -76,6 +85,7 @@ module.exports = {
   loadByName: loadByName,
   loadByNameWithPrice: loadByNameWithPrice,
   insertProduct: insertProduct,
+  updateWeight: updateWeight,
   loadLatestPriceByProductId: loadLatestPriceByProductId,
   insertPrice: insertPrice,
   getTopRankingProduct: getTopRankingProduct
