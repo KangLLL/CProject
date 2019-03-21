@@ -1,8 +1,11 @@
 const USCURRENCY = "US Dollar";
 const CHNCURRENCY = "Chinese Yuan";
 
+const USTOCHN = "From US to China";
+const CHNTOUS = "From China to US";
+
 function getCookie(name) {
-  var v = document.cookie.match('(^|;) ?' + name + '=([^;]*)(;|$)');
+  var v = document.cookie.match("(^|;) ?" + name + "=([^;]*)(;|$)");
   return v ? v[2] : null;
 }
 
@@ -13,7 +16,7 @@ function setCookie(name, value, days) {
 }
 
 function deleteCookie(name) {
-  setCookie(name, '', -1);
+  setCookie(name, "", -1);
 }
 
 class CookieSelect extends React.Component {
@@ -45,35 +48,46 @@ class PriceTable extends React.Component {
   }
 
   render() {
-    const priceSymbol = this.props.currency == CHNCURRENCY ? '￥' : '$';
+    const priceSymbol = this.props.currency == CHNCURRENCY ? "￥" : "$";
 
-    const rows = this.props.prices.map((price, step) => {
+    var temp = this.props.prices;
+    if (this.props.direction == CHNTOUS) {
+      temp = this.props.prices.slice(0);
+      temp.reverse();
+    }
+
+    const rows = temp.map((price, step) => {
+
       const chPrice = this.props.currency == CHNCURRENCY ? price.chPrice : price.chPrice * exchangeRate["CTU"];
       const usPrice = this.props.currency == USCURRENCY ? price.usPrice : price.usPrice * exchangeRate["UTC"];
       const tax = usPrice * (states[this.props.state] / 100);
-      const difference = (usPrice + tax) - chPrice;
+      const usPriceDescription = usPrice.toFixed(2) + " (" + this.props.state + " tax: " + priceSymbol + tax.toFixed(2) + ") = " + priceSymbol + (usPrice + tax).toFixed(2);
+      const difference = chPrice - (usPrice + tax);
+      const profit = price.weight ? (chPrice - (usPrice + tax)) / price.weight : 0;
       return (
-        <tr key={step}>
-          {showRowNumber && <th scope='row'> {step + 1} </th>}
-          <td className="cell"> {price.usName} </td>
-          <td className="cell"> {priceSymbol + usPrice.toFixed(2)} + ({this.props.state} tax: {priceSymbol + tax.toFixed(2)}) = {priceSymbol + (usPrice + tax).toFixed(2)} </td>
-          <td className="cell"> {price.chName} </td>
-          <td className="cell"> {priceSymbol + chPrice.toFixed(2)} </td>
-          <td className="cell"> {priceSymbol + difference.toFixed(2)} </td>
+        <tr key={step} className={!showRowNumber || step >= 3 ? "" : step == 2 ? "table-warning" : step == 1 ? "table-primary" : "table-success"}>
+          {showRowNumber && <th scope="row"> {step + 1} </th>}
+          <td className="cell"> {this.props.direction == USTOCHN ? price.usName : price.chName} </td>
+          <td className="cell"> {priceSymbol + (this.props.direction == USTOCHN ? usPriceDescription : chPrice.toFixed(2))} </td>
+          <td className="cell"> {this.props.direction == USTOCHN ? price.chName : price.usName} </td>
+          <td className="cell"> {priceSymbol + (this.props.direction == USTOCHN ? chPrice.toFixed(2) : usPriceDescription)} </td>
+          <td className="cell"> {priceSymbol + (this.props.direction == USTOCHN ? difference.toFixed(2) : -difference.toFixed(2))} </td>
+          {showRowNumber && <td className="cell"> {priceSymbol + profit} </td>}
         </tr>
       );
     });
 
     return (
-      <table className="table table-striped">
+      <table className="table">
         <thead className="thead-inverse">
           <tr>
-            {showRowNumber && <th className='cell'> # </th>}
-            <th className="cell">US Name</th>
-            <th className="cell">US Price</th>
-            <th className="cell">China Name</th>
-            <th className="cell">China Price</th>
+            {showRowNumber && <th className="cell"> # </th>}
+            <th className="cell"> {this.props.direction == USTOCHN ? "US Name" : "China Name"}</th>
+            <th className="cell">{this.props.direction == USTOCHN ? "US Price" : "China Price"}</th>
+            <th className="cell">{this.props.direction == USTOCHN ? "China Name" : "US Name"}</th>
+            <th className="cell">{this.props.direction == USTOCHN ? "China Price" : "US Price"}</th>
             <th className="cell">Difference</th>
+            {showRowNumber && <th className="cell">Profit(per 1 pound)</th>}
           </tr>
         </thead>
         <tbody>
@@ -89,7 +103,8 @@ class PriceComp extends React.Component {
     super(props);
     this.state = {
       currency: getCookie("pricecurrency") || USCURRENCY,
-      state: getCookie("pricestate") || props.states[0]
+      state: getCookie("pricestate") || props.states[0],
+      direction: getCookie("pricedirection") || USTOCHN
     }
   }
 
@@ -101,8 +116,12 @@ class PriceComp extends React.Component {
           <div className="col-sm-1">
           </div>
           <CookieSelect name="State" options={this.props.states} selected={this.state.state} onChange={t => this.handleStateChange(t)} />
-          <PriceTable currency={this.state.currency} state={this.state.state} prices={this.props.prices} />
         </div>
+        <div className="row">
+          <CookieSelect name="Trip Direction" options={[USTOCHN, CHNTOUS]} selected={this.state.direction} onChange={d => this.handleDirectionChange(d)} />
+          {showRowNumber && <div className="col-sm-5 align-right"><a className="h5 text-info" href='./recommend'>Recommendation</a></div>}
+        </div>
+        <PriceTable currency={this.state.currency} state={this.state.state} direction={this.state.direction} prices={this.props.prices} />
       </div>
     );
   }
@@ -115,6 +134,11 @@ class PriceComp extends React.Component {
   handleStateChange(state) {
     setCookie("pricestate", state, 30);
     this.setState({ state: state });
+  }
+
+  handleDirectionChange(direction) {
+    setCookie("pricedirection", direction, 30);
+    this.setState({ direction: direction });
   }
 }
 

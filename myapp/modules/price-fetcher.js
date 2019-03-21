@@ -53,10 +53,13 @@ function updateProductWeight(product) {
   if (!product.WEIGHT) {
     feature.getWeight('https://www.amazon.com' + product.URL, (err, w) => {
       if (!err) {
-        models.Product.updateWeight(product.ID, w);
-      }  
+        models.Product.updateWeight(product.ID, w, (err, result) => {
+          console.log(err);
+          console.log(result);
+        });
+      }
     });
-  } 
+  }
 }
 
 module.exports = {

@@ -1,0 +1,22 @@
+extends layout
+block resource
+  link(rel="stylesheet", href='/stylesheets/loader.css')
+
+block content
+  #loader(style="display:none")
+    .loader-container
+      .loader
+    .loader-text
+      br
+      p loading...
+  .container
+    .row
+      .col-sm
+      .col-sm
+        form(method="POST", action="./search", onsubmit="$('#loader').show();$('.container').hide();")
+          .form-group
+            label(for="name") Please input the item you want to compare
+            input#name.form-control(type="text", name="name",required, autofocus="autofocus",placeholder="name")
+            <hr>
+            button.btn.btn-primary(type="submit") Search
+      .col-sm

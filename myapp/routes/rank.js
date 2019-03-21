@@ -7,6 +7,7 @@ const tax = require('../config/tax.json');
 
 /* Show Ranking */
 router.get('/', function (req, res, next) {
+  if (req.originalUrl.slice(-1) != '/') return res.redirect(req.originalUrl + '/');
   ranking.getTopProfitProducts(10, (err, results) => {
     if (err) return next(err);
     exchange.getExchangeRates((err, result) => {
