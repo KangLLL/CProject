@@ -50,11 +50,7 @@ class PriceTable extends React.Component {
   render() {
     const priceSymbol = this.props.currency == CHNCURRENCY ? "￥" : "$";
 
-    var temp = this.props.prices;
-    if (this.props.direction == CHNTOUS) {
-      temp = this.props.prices.slice(0);
-      temp.reverse();
-    }
+    var temp = (showRowNumber && this.props.direction == CHNTOUS) ? this.props.chnPrices : this.props.prices;
 
     const rows = temp.map((price, step) => {
 
@@ -63,7 +59,7 @@ class PriceTable extends React.Component {
       const tax = usPrice * (states[this.props.state] / 100);
       const usPriceDescription = usPrice.toFixed(2) + " (" + this.props.state + " tax: " + priceSymbol + tax.toFixed(2) + ") = " + priceSymbol + (usPrice + tax).toFixed(2);
       const difference = chPrice - (usPrice + tax);
-      const profit = price.weight ? (chPrice - (usPrice + tax)) / price.weight : 0;
+      const profit = price.weight ? difference / price.weight : 0;
       return (
         <tr key={step} className={!showRowNumber || step >= 3 ? "" : step == 2 ? "table-warning" : step == 1 ? "table-primary" : "table-success"}>
           {showRowNumber && <th scope="row"> {step + 1} </th>}
@@ -72,7 +68,7 @@ class PriceTable extends React.Component {
           <td className="cell"> {this.props.direction == USTOCHN ? price.chName : price.usName} </td>
           <td className="cell"> {priceSymbol + (this.props.direction == USTOCHN ? chPrice.toFixed(2) : usPriceDescription)} </td>
           <td className="cell"> {priceSymbol + (this.props.direction == USTOCHN ? difference.toFixed(2) : -difference.toFixed(2))} </td>
-          {showRowNumber && <td className="cell"> {priceSymbol + profit} </td>}
+          {showRowNumber && <td className="cell"> {priceSymbol + (this.props.direction == USTOCHN ? profit.toFixed(2) : -profit.toFixed(2))} </td>}
         </tr>
       );
     });
@@ -121,7 +117,7 @@ class PriceComp extends React.Component {
           <CookieSelect name="Trip Direction" options={[USTOCHN, CHNTOUS]} selected={this.state.direction} onChange={d => this.handleDirectionChange(d)} />
           {showRowNumber && <div className="col-sm-5 align-right"><a className="h5 text-info" href='./recommend'>Recommendation</a></div>}
         </div>
-        <PriceTable currency={this.state.currency} state={this.state.state} direction={this.state.direction} prices={this.props.prices} />
+        <PriceTable currency={this.state.currency} state={this.state.state} direction={this.state.direction} prices={this.props.prices} chnPrices={this.props.chnPrices} />
       </div>
     );
   }
@@ -142,4 +138,4 @@ class PriceComp extends React.Component {
   }
 }
 
-ReactDOM.render(<PriceComp states={Object.keys(states)} prices={prices} />, document.getElementById("root"));
+ReactDOM.render(<PriceComp states={Object.keys(states)} prices={prices} chnPrices={chnPrices || ''} />, document.getElementById("root"));

@@ -21,6 +21,12 @@ block content
               input#weight.form-control(type="number",min=0,max=50,name="weight",required, autofocus="autofocus")
             .col-sm-auto
               span lbs
+          .form-group.row
+            label(for="direction") Trip Direction
+            .col-sm
+              select#direction.form-control(name="direction", required)
+               option(value="1") From US To China
+               option(value="2") From China To US
           <hr>
           button.btn.btn-primary(type="submit") Get Recommendation 
       .col-sm

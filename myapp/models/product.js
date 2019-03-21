@@ -70,9 +70,18 @@ function insertPrice(pid, usprice, chprice, date, callback) {
     });
 }
 
-function getTopRankingProduct(top, callback) {
+function getTopRankingProductForUS(top, rate, callback) {
   db.stage(cfg)
-    .query('select p.NAME, p.CHNAME, p.WIDTH, p.HEIGHT, p.DEPTH, p.WEIGHT, tep.USPRICE, tep.CHPRICE, (tep.CHPRICE - tep.USPRICE) / p.WEIGHT as profit from product p inner join (select pr.PRODUCTID, pr.USPRICE, pr.CHPRICE from price pr inner join (select PRODUCTID, max(DATE) as DATE from price group by PRODUCTID) tp on pr.PRODUCTID=tp.PRODUCTID and pr.DATE=tp.DATE) tep on tep.PRODUCTID=p.ID where p.WEIGHT is not null order by profit desc limit ?', [top])
+    .query('select p.NAME, p.CHNAME, p.WIDTH, p.HEIGHT, p.DEPTH, p.WEIGHT, tep.USPRICE, tep.CHPRICE, (tep.CHPRICE * ? - tep.USPRICE) / p.WEIGHT as profit from product p inner join (select pr.PRODUCTID, pr.USPRICE, pr.CHPRICE from price pr inner join (select PRODUCTID, max(DATE) as DATE from price group by PRODUCTID) tp on pr.PRODUCTID=tp.PRODUCTID and pr.DATE=tp.DATE) tep on tep.PRODUCTID=p.ID where p.WEIGHT is not null order by profit desc limit ?', [rate, top])
+    .finale((err, results) => {
+      if (err) return callback(err);
+      callback(null, results);
+    });
+}
+
+function getTopRankingProductForChina(top, rate, callback) {
+  db.stage(cfg)
+    .query('select p.NAME, p.CHNAME, p.WIDTH, p.HEIGHT, p.DEPTH, p.WEIGHT, tep.USPRICE, tep.CHPRICE, (tep.CHPRICE * ? - tep.USPRICE) / p.WEIGHT as profit from product p inner join (select pr.PRODUCTID, pr.USPRICE, pr.CHPRICE from price pr inner join (select PRODUCTID, max(DATE) as DATE from price group by PRODUCTID) tp on pr.PRODUCTID=tp.PRODUCTID and pr.DATE=tp.DATE) tep on tep.PRODUCTID=p.ID where p.WEIGHT is not null order by profit asc limit ?', [rate, top])
     .finale((err, results) => {
       if (err) return callback(err);
       callback(null, results);
@@ -88,5 +97,6 @@ module.exports = {
   updateWeight: updateWeight,
   loadLatestPriceByProductId: loadLatestPriceByProductId,
   insertPrice: insertPrice,
-  getTopRankingProduct: getTopRankingProduct
+  getTopRankingProductForUS: getTopRankingProductForUS,
+  getTopRankingProductForChina: getTopRankingProductForChina
 };

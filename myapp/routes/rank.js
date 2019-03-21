@@ -8,11 +8,11 @@ const tax = require('../config/tax.json');
 /* Show Ranking */
 router.get('/', function (req, res, next) {
   if (req.originalUrl.slice(-1) != '/') return res.redirect(req.originalUrl + '/');
-  ranking.getTopProfitProducts(10, (err, results) => {
+  ranking.getTopProfitProducts(20, (err, usPrice, chnPrice) => {
     if (err) return next(err);
     exchange.getExchangeRates((err, result) => {
       if (err) return next(err);
-      res.render('ranking', { title: 'Ranking', prices: results, tax: tax, exchange: result });
+      res.render('ranking', { title: 'Ranking', usPrices: usPrice, chnPrices: chnPrice, tax: tax, exchange: result });
     });
   });
 });
@@ -22,7 +22,7 @@ router.get('/recommend', function (req, res, next) {
 });
 
 router.post('/recommend', function (req, res, next) {
-  ranking.getRecommendProducts(req.body.weight, (err, recommends) => {
+  ranking.getRecommendProducts(req.body.weight, req.body.direction == '1', (err, recommends) => {
     if (err) return next(err);
     res.render('recommend-list', { title: 'Recommend List', recommends: recommends });
   });

@@ -32,6 +32,13 @@ function getWeight(url, callback) {
 
       if (weight) return callback(null, weightUtil.convertWeight(weight));
 
+      title = $('#feature-bullets .a-list-item', html).filter((i, ele)=>{
+        return $(ele).text().includes('oz') || $(ele).text().includes('OZ');
+      });
+      partern = /(\d+\.?\d+\s(?:OZ|oz))\s/g;
+      if (title.text()) weight = partern.exec(title.text())[1];
+
+      if (weight) return callback(null, weightUtil.convertWeight(weight));
     })
     .catch(err => {
       callback(err, null);

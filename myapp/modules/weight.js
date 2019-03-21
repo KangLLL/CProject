@@ -1,5 +1,6 @@
 function convertWeight(weight) {
   weight = weight.trim();
+  weight = weight.toLowerCase();
   
   reg = /(\d+\.?\d+)\s(lbs|ounces|pounds|ozs|lb|ounce|pound|oz)/ig
 

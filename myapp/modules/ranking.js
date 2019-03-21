@@ -2,33 +2,57 @@ const models = require('../models');
 const algorithm = require('./algorithm');
 const exchange = require('./exchange');
 
+function mapFunction(result) {
+  return { usName: result.NAME, usPrice: parseFloat(result.USPRICE), chName: result.CHNAME, chPrice: parseFloat(result.CHPRICE), weight: parseFloat(result.WEIGHT) };
+}
+
 function getTopProfitProducts(top, callback) {
-  models.Product.getTopRankingProduct(top, (err, results) => {
+  exchange.getRateFromCNYToUSD((err, rate) => {
     if (err) return callback(err);
-    const prices = results.map((result) => {
-      return { usName: result.NAME, usPrice: parseFloat(result.USPRICE), chName: result.CHNAME, chPrice: parseFloat(result.CHPRICE), weight: parseFloat(result.WEIGHT) };
+    models.Product.getTopRankingProductForUS(top, rate, (err, results) => {
+      if (err) return callback(err);
+      const us = results.map(mapFunction);
+      models.Product.getTopRankingProductForChina(top, rate, (err, results) => {
+        if (err) return callback(err);
+        const chn = results.map(mapFunction);
+        callback(null, us, chn);
+      });
     });
-    callback(null, prices);
   });
 }
 
-function getRecommendProducts(weight, callback) {
-  getTopProfitProducts(20, (err, prices) => {
+function processResult(prices, weight, rate, isFromUS, callback) {
+  var list = prices.map((price) => {
+    return { name: price.NAME, value: isFromUS ? (price.CHPRICE * rate - price.USPRICE) : (price.USPRICE - price.CHPRICE * rate), weight: parseInt(price.WEIGHT * 100) }
+  });
+
+  list = list.filter((price) => {
+    return price.value > 0;
+  });
+  var result = algorithm.knapsack(weight * 100, list);
+
+  var results = {};
+  Object.keys(result).forEach(i => {
+    results[list[i].name] = result[i];
+  });
+  callback(null, results);
+}
+
+function getRecommendProducts(weight, isFromUS, callback) {
+  exchange.getRateFromCNYToUSD((err, rate) => {
     if (err) return callback(err);
-    exchange.getRateFromCNYToUSD((err, rate) => {
-      if (err) return callback(err);
-      var list = prices.map((price) => {
-        return { name: price.usName, value: price.chPrice * rate - price.usPrice, weight: parseInt(price.weight * 100) }
+    if (isFromUS) {
+      models.Product.getTopRankingProductForUS(20, rate, (err, results) => {
+        if (err) return callback(err);
+        processResult(results, weight, rate, isFromUS, callback);
       });
-
-      var result = algorithm.knapsack(weight * 100, list);
-
-      var results = {};
-      Object.keys(result).forEach(i => {
-        results[list[i].name] = result[i];
+    }
+    else {
+      models.Product.getTopRankingProductForChina(20, rate, (err, results) => {
+        if (err) return callback(err);
+        processResult(results, weight, rate, isFromUS, callback);
       });
-      callback(null, results);
-    });
+    }
   });
 }
 
