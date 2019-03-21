@@ -13,10 +13,14 @@ block content
     .row
       .col-sm
       .col-sm
-        form(method="POST", action="./search", onsubmit="$('#loader').show();$('.container').hide();")
+        form(method="POST", action="./recommend", onsubmit="$('#loader').show();$('.container').hide();")
           .form-group
-            label(for="name") Please input the item you want to compare
-            input#name.form-control(type="text", name="name",required, autofocus="autofocus",placeholder="name")
-            <hr>
-            button.btn.btn-primary(type="submit") Search
+            label(for="weight") Please input the capacity your luggage
+          .row.no-gutters
+            .col-sm-10
+              input#weight.form-control(type="number",min=0,max=50,name="weight",required, autofocus="autofocus")
+            .col-sm-auto
+              span lbs
+          <hr>
+          button.btn.btn-primary(type="submit") Get Recommendation 
       .col-sm

@@ -17,4 +17,17 @@ router.get('/', function (req, res, next) {
   });
 });
 
+router.get('/recommend', function (req, res, next) {
+  res.render('recommend', { title: 'Recommend' });
+});
+
+router.post('/recommend', function (req, res, next) {
+  ranking.getRecommendProducts(req.body.weight, (err, recommends) => {
+    if (err) return next(err);
+    res.render('recommend-list', { title: 'Recommend List', recommends: recommends });
+  });
+});
+
+
+
 module.exports = router;

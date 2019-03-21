@@ -1,0 +1,16 @@
+extends layout
+
+block content
+  .container
+    table.table.table-striped
+      thead.thead-inverse
+        tr
+          th Name
+          th Quantity
+      tbody
+        - Object.keys(recommends).forEach((key)=>{
+          tr
+            td.cell #{key}
+            td.cell #{recommends[key]}
+        - })
+

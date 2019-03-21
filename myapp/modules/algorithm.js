@@ -21,5 +21,32 @@ module.exports = {
     }
 
     return dp[name.length];
+  },
+
+  knapsack: (weight, list) => {
+    var recur = (w, l, memo, back) => {
+      if (w == 0) return 0;
+      if (memo[w]) return memo[w];
+      var result = 0;
+      for (var i = 0; i < l.length; i++) {
+        if (w >= l[i].weight) {
+          result = Math.max(result, recur(w - l[i].weight, l, memo, back) + l[i].value);
+          back[w] = i;
+        }
+      }
+      memo[w] = result;
+      return result;
+    };
+
+    var backlist = {};
+    recur(weight, list, {}, backlist);
+
+    var w = weight;
+    var result = {};
+    while (w in backlist) {
+      result[backlist[w]] = (result[backlist[w]] || 0) + 1;
+      w -= list[backlist[w]].weight;
+    }
+    return result;
   }
 }

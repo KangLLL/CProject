@@ -1,4 +1,6 @@
-const models = require('../models')
+const models = require('../models');
+const algorithm = require('./algorithm');
+const exchange = require('./exchange');
 
 function getTopProfitProducts(top, callback) {
   models.Product.getTopRankingProduct(top, (err, results) => {
@@ -10,6 +12,27 @@ function getTopProfitProducts(top, callback) {
   });
 }
 
+function getRecommendProducts(weight, callback) {
+  getTopProfitProducts(20, (err, prices) => {
+    if (err) return callback(err);
+    exchange.getRateFromCNYToUSD((err, rate) => {
+      if (err) return callback(err);
+      var list = prices.map((price) => {
+        return { name: price.usName, value: price.chPrice * rate - price.usPrice, weight: parseInt(price.weight * 100) }
+      });
+
+      var result = algorithm.knapsack(weight * 100, list);
+
+      var results = {};
+      Object.keys(result).forEach(i => {
+        results[list[i].name] = result[i];
+      });
+      callback(null, results);
+    });
+  });
+}
+
 module.exports = {
-  getTopProfitProducts: getTopProfitProducts
+  getTopProfitProducts: getTopProfitProducts,
+  getRecommendProducts: getRecommendProducts
 }
