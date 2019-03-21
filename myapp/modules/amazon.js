@@ -1,6 +1,7 @@
 const axios = require('axios');
 const $ = require('cheerio');
 const algorithm = require('./algorithm');
+const cfg = require('../config/config.json')
 
 function getPrice(name, callback) {
   var url = 'https://www.amazon.com/s?k=' + name.replace(/ /g, '+');
@@ -12,11 +13,11 @@ function getPrice(name, callback) {
       var price = '';
       var url = '';
       var minDistance = 1000;
-      var top = 5;
-      $('.sg-col-inner .sg-col-inner', html).each((i, ele) => {
-        if ($('h5 span', $(ele))[0] && $('.a-offscreen', $(ele))[0]) {
+      var top = cfg.amazonTop;
+      $('.sg-col-inner .sg-col-inner .sg-col-inner', html).each((i, ele) => {
+        if ($('h5 span', $(ele))[0] && $('.a-offscreen', $(ele))[0] && ((!$('.sg-col-inner .a-color-secondary', $(ele))[0]) || !$('.sg-col-inner .a-color-secondary', $(ele)).first().text().includes('Sponsored'))) {
           var temp = $('h5 span', $(ele)).text();
-          
+
           var dist = algorithm.editDistance(temp.toLowerCase(), name.toLowerCase());
           if (dist < minDistance || (dist == minDistance && temp.length < n.length)) {
             minDistance = dist;

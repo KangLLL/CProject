@@ -138,4 +138,4 @@ class PriceComp extends React.Component {
   }
 }
 
-ReactDOM.render(<PriceComp states={Object.keys(states)} prices={prices} chnPrices={chnPrices || ''} />, document.getElementById("root"));
+ReactDOM.render(<PriceComp states={Object.keys(states)} prices={prices} chnPrices={chnPrices} />, document.getElementById("root"));

@@ -11,12 +11,11 @@ function getPrice(keyword, name, price, callback) {
   //   i ++;
   // }
   price = parseFloat(price);
-  var url = 'https://search.jd.com/Search?keyword=' + encodeURIComponent(keyword) + '&ev=exprice_' + (price * 5) + '-' + (price * 20);
+  var url = 'https://search.jd.com/Search?keyword=' + encodeURIComponent(keyword) + '&ev=exprice_' + (price * 3) + '-' + (price * 30);
   console.log(url);
   axios.get(url)
     .then(res => {
       var html = res.data;
-      var brand = name.split(' ')[0];
 
       var mPrice = '';
       var mName = '';
@@ -31,7 +30,7 @@ function getPrice(keyword, name, price, callback) {
         var p = $('.p-price strong', $(ele)).text();
         var n = $('.p-name em', $(ele)).text();
 
-        if (n.includes(brand) && !n.includes('二手')) {
+        if (!n.includes('二手')) {
 
           var temp = algorithm.editDistance(n, name);
 
