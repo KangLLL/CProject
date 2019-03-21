@@ -30,8 +30,11 @@ module.exports = {
       var result = 0;
       for (var i = 0; i < l.length; i++) {
         if (w >= l[i].weight) {
-          result = Math.max(result, recur(w - l[i].weight, l, memo, back) + l[i].value);
-          back[w] = i;
+          var temp = recur(w - l[i].weight, l, memo, back) + l[i].value;
+          if (temp > result) {
+            result = temp;
+            back[w] = i;
+          }
         }
       }
       memo[w] = result;
