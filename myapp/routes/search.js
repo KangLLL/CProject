@@ -7,6 +7,8 @@ const tax = require('../config/tax.json');
 
 const featureFetcher = require('../modules/feature-fetcher');
 
+const axios = require('axios');
+
 /* Product Search */
 router.get('/', function (req, res, next) {
   // var url = 'https://www.amazon.com/Apple-iPhone-32GB-Gold-Prepaid/dp/B06XBR43HF/ref=sr_1_1_sspa?keywords=iphone&qid=1552961179&s=gateway&sr=8-1-spons&psc=1';
@@ -16,6 +18,16 @@ router.get('/', function (req, res, next) {
   //   console.log(weight);
   //   res.render('search', { title: 'Search Item' });
   // });
+
+  // var url = 'https://translate.yandex.net/api/v1.5/tr.json/translate?key=' + encodeURIComponent('trnsl.1.1.20190322T053830Z.be68ef09bc438708.3d4f533342a617c24fbd002ef82f25632b16d40a') + '&text=' + encodeURIComponent('Coach handbag') + '&lang=' + encodeURIComponent('en-zh');
+  // axios.get(url)
+  //   .then(res => {
+  //     console.log(res.data);
+  //   })
+  //   .catch(err => {
+      
+  //     console.log(err);
+  //   });
 
   res.render('search', { title: 'Search Item' });
 });
