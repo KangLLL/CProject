@@ -19,6 +19,7 @@ function getPrice(keyword, name, price, callback) {
 
       var mPrice = '';
       var mName = '';
+      var mURL = '';
       var match = 1000;
 
       var errorDiv = $('.check-error', html);
@@ -27,24 +28,29 @@ function getPrice(keyword, name, price, callback) {
       }
 
       $('.gl-item .gl-i-wrap', html).each((i, ele) => {
-        var p = $('.p-price strong', $(ele)).text();
         var n = $('.p-name em', $(ele)).text();
 
         if (!n.includes('二手')) {
 
+          name = 'Apple iPhone XR (64GB) - Black - [Locked to Simple Mobile Prepaid]';
+
           var temp = algorithm.editDistance(n, name);
+          // console.log(temp);
+          // console.log(n);
+          // console.log(name);
 
           if (temp < match || (temp == match && n.length < mName.length)) {
-            mPrice = p;
+            mPrice = $('.p-price strong', $(ele)).text();
             mName = n;
+            mURL = $('.p-name a', $(ele)).attr('href');
             match = temp;
           }
         }
       });
-      callback(null, mName, mPrice);
+      callback(null, mName, mPrice, mURL);
     })
     .catch(err => {
-      callback(err, null, null);
+      callback(err, null, null, null);
     });
 }
 

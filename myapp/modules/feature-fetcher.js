@@ -2,6 +2,18 @@ const axios = require('axios');
 const $ = require('cheerio');
 const weightUtil = require('./weight');
 
+function extractWeightFromTable(id, html) {
+  var selector = '#' + id + ' th';
+  var weight = null;
+  $(selector, html).each((i, ele) => {
+    if ($(ele).text().trim() == 'Item Weight') {
+      weight = $(ele).next().text().trim();
+      return false;
+    }
+  });
+  return weight;
+}
+
 function getWeight(url, callback) {
   axios.get(url)
     .then(res => {
@@ -25,11 +37,11 @@ function getWeight(url, callback) {
       
       if (weight) return callback(null, weightUtil.convertWeight(weight));
 
-      title = $('#productDetails_techSpec_section_2 th', html).filter((i, ele) => {
-        return $(ele).text().trim() == 'Item Weight';
-      });
-      weight = title.next().text().trim();
 
+      weight = extractWeightFromTable('productDetails_techSpec_section_2', html);
+      if (weight) return callback(null, weightUtil.convertWeight(weight));
+
+      weight = extractWeightFromTable('productDetails_detailBullets_sections1', html);
       if (weight) return callback(null, weightUtil.convertWeight(weight));
 
       title = $('#feature-bullets .a-list-item', html).filter((i, ele)=>{

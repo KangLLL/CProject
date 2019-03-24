@@ -63,9 +63,17 @@ class PriceTable extends React.Component {
       return (
         <tr key={step} className={!showRowNumber || step >= 3 ? "" : step == 2 ? "table-warning" : step == 1 ? "table-primary" : "table-success"}>
           {showRowNumber && <th scope="row"> {step + 1} </th>}
-          <td className="cell"> {this.props.direction == USTOCHN ? price.usName : price.chName} </td>
+          <td className="cell"> 
+            <a target="_blank" href={this.props.direction == USTOCHN ? "https://www.amazon.com" + price.url : price.churl}>
+              <strong>{this.props.direction == USTOCHN ? price.usName : price.chName}</strong>
+            </a> 
+          </td>
           <td className="cell"> {priceSymbol + (this.props.direction == USTOCHN ? usPriceDescription : chPrice.toFixed(2))} </td>
-          <td className="cell"> {this.props.direction == USTOCHN ? price.chName : price.usName} </td>
+          <td className="cell">
+            <a target="_blank" href={this.props.direction == USTOCHN ? price.churl : "https://www.amazon.com" + price.url}>
+              <strong>{this.props.direction == USTOCHN ? price.chName : price.usName}</strong>
+            </a> 
+          </td>
           <td className="cell"> {priceSymbol + (this.props.direction == USTOCHN ? chPrice.toFixed(2) : usPriceDescription)} </td>
           <td className="cell"> {priceSymbol + (this.props.direction == USTOCHN ? difference.toFixed(2) : -difference.toFixed(2))} </td>
           {showRowNumber && <td className="cell"> {priceSymbol + (this.props.direction == USTOCHN ? profit.toFixed(2) : -profit.toFixed(2))} </td>}

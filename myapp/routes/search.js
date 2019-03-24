@@ -25,7 +25,7 @@ router.get('/', function (req, res, next) {
   //     console.log(res.data);
   //   })
   //   .catch(err => {
-      
+
   //     console.log(err);
   //   });
 
@@ -33,12 +33,12 @@ router.get('/', function (req, res, next) {
 });
 
 router.post('/', function (req, res, next) {
-  priceFetcher.getPrices(req.body.name, (err, name, usprice, chname, chprice) => {
+  priceFetcher.getPrices(req.body.name, (err, name, usprice, url, chname, chprice, churl) => {
     if (err) return next(err);
     if (!name) return res.render('no-product', { title: 'No result' });
     exchange.getExchangeRates((err, result) => {
       if (err) return next(err);
-      res.render('price', { title: 'Price', prices: [{ usName: name, usPrice: parseFloat(usprice), chName: chname, chPrice: parseFloat(chprice) }], tax: tax, exchange: result });
+      res.render('price', { title: 'Price', prices: [{ usName: name, usPrice: parseFloat(usprice), chName: chname, chPrice: parseFloat(chprice), url: url, churl: churl }], tax: tax, exchange: result });
     });
   });
 });

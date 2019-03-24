@@ -13,18 +13,18 @@ function getPrices(keyword, callback) {
     models.Product.loadByNameWithPrice(name, (err, result) => {
       if (err) return callback(err);
       if (!result) {
-        jd.getPrice(keyword, name, price, (err, chname, chprice) => {
+        jd.getPrice(keyword, name, price, (err, chname, chprice, churl) => {
           if (err) return callback(err);
-          if (!chname || !chprice) return callback(null, null, null, null, null);
+          if (!chname || !chprice) return callback(null, null, null, null, null, null, null);
           chprice = chprice.replace(/,|￥/g, '');
-          models.Product.insertProduct(name, chname, url, (err) => {
+          models.Product.insertProduct(name, chname, url, churl, (err) => {
             if (err) return callback(err);
             models.Product.loadByName(name, (err, result) => {
               if (err) return callback(err);
               updateProductWeight(result);
               models.Product.insertPrice(result.ID, price, chprice, date.currentDate(), (err) => {
                 if (err) return callback(err);
-                callback(null, name, price, chname, chprice);
+                callback(null, name, price, url, chname, chprice, churl);
               });
             });
           });
@@ -32,18 +32,18 @@ function getPrices(keyword, callback) {
       }
       else if (!result.USPRICE || date.isDaysAfter(result.DATE, cfg.priceRefreshDay)) {
         updateProductWeight(result);
-        jd.getPrice(keyword, name, price, (err, chname, chprice) => {
+        jd.getPrice(keyword, name, price, (err, chname, chprice, churl) => {
           if (err) return callback(err);
           chprice = chprice.replace(/,|￥/g, '');
           models.Product.insertPrice(result.ID, price, chprice, date.currentDate(), (err) => {
             if (err) return callback(err);
-            callback(null, name, price, chname, chprice);
+            callback(null, name, price, url, chname, chprice, churl);
           });
         });
       }
       else {
         updateProductWeight(result);
-        callback(null, name, result.USPRICE, result.CHNAME, result.CHPRICE);
+        callback(null, name, result.USPRICE, result.URL, result.CHNAME, result.CHPRICE, result.CHURL);
       }
     });
   });

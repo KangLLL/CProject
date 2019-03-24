@@ -31,6 +31,7 @@ function getPrice(name, callback) {
             price = $(part).find('.a-offscreen').first().text();
             n = temp;
             url = $(ele).parent().attr('href');
+            url = url.slice(0, url.indexOf('?'));
           }
           if (--top == 0) return false;
         }

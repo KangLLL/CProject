@@ -3,7 +3,7 @@ const algorithm = require('./algorithm');
 const exchange = require('./exchange');
 
 function mapFunction(result) {
-  return { usName: result.NAME, usPrice: parseFloat(result.USPRICE), chName: result.CHNAME, chPrice: parseFloat(result.CHPRICE), weight: parseFloat(result.WEIGHT) };
+  return { usName: result.NAME, usPrice: parseFloat(result.USPRICE), chName: result.CHNAME, chPrice: parseFloat(result.CHPRICE), weight: parseFloat(result.WEIGHT), url: result.URL, churl: result.CHURL };
 }
 
 function getTopProfitProducts(top, callback) {
