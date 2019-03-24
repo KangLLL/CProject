@@ -23,7 +23,7 @@ function getTopProfitProducts(top, callback) {
 
 function processResult(prices, weight, rate, isFromUS, callback) {
   var list = prices.map((price) => {
-    return { name: price.NAME, value: isFromUS ? (price.CHPRICE * rate - price.USPRICE) : (price.USPRICE - price.CHPRICE * rate), weight: parseInt(price.WEIGHT * 100) }
+    return { name: price.NAME, value: isFromUS ? (price.CHPRICE * rate - price.USPRICE) : (price.USPRICE - price.CHPRICE * rate), weight: parseInt(price.WEIGHT * 100), url: isFromUS ? 'https://www.amazon.com' + price.URL : price.CHURL }
   });
 
   list = list.filter((price) => {
@@ -31,9 +31,9 @@ function processResult(prices, weight, rate, isFromUS, callback) {
   });
   var result = algorithm.knapsack(weight * 100, list);
 
-  var results = {};
+  var results = [];
   Object.keys(result).forEach(i => {
-    results[list[i].name] = result[i];
+    results[i] = { name: list[i].name, count: result[i], url: list[i].url };
   });
   callback(null, results);
 }

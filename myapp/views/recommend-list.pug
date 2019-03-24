@@ -8,9 +8,11 @@ block content
           th Name
           th Quantity
       tbody
-        - Object.keys(recommends).forEach((key)=>{
+        - recommends.forEach((recommend)=>{
           tr
-            td.cell #{key}
-            td.cell #{recommends[key]}
+            td.cell
+              a(href=recommend.url target="_blank") 
+                strong #{recommend.name}
+            td.cell #{recommend.count}
         - })
 

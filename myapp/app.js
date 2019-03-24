@@ -10,6 +10,7 @@ var search = require('./routes/search');
 var tax = require('./routes/tax');
 var currency = require('./routes/currency');
 var rank = require('./routes/rank');
+var recommend = require('./routes/recommend');
 var users = require('./routes/users');
 
 var models = require('./models');
@@ -34,6 +35,7 @@ app.use('/tax', tax);
 app.use('/currency', currency);
 app.use('/rank', rank);
 app.use('/users', users);
+app.use('/recommend', recommend);
 
 models.init();
 

@@ -123,7 +123,6 @@ class PriceComp extends React.Component {
         </div>
         <div className="row">
           <CookieSelect name="Trip Direction" options={[USTOCHN, CHNTOUS]} selected={this.state.direction} onChange={d => this.handleDirectionChange(d)} />
-          {showRowNumber && <div className="col-sm-5 align-right"><a className="h5 text-info" href='./recommend'>Recommendation</a></div>}
         </div>
         <PriceTable currency={this.state.currency} state={this.state.state} direction={this.state.direction} prices={this.props.prices} chnPrices={this.props.chnPrices} />
       </div>
