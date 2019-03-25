@@ -2,14 +2,7 @@ const axios = require('axios');
 const $ = require('cheerio');
 const algorithm = require('./algorithm');
 
-function getPrice(keyword, name, price, callback) {
-  // var keys = name.split(' ');
-  // var temp = keys[0];
-  // var i = 1;
-  // while (i < keys.length && temp.length < 20) {
-  //   temp = temp + ' ' + keys[i];
-  //   i ++;
-  // }
+function fetch(keyword, name, translate, price, callback) {
   price = parseFloat(price);
   var url = 'https://search.jd.com/Search?keyword=' + encodeURIComponent(keyword) + '&ev=exprice_' + (price * 3) + '-' + (price * 30);
   console.log(url);
@@ -31,13 +24,16 @@ function getPrice(keyword, name, price, callback) {
         var n = $('.p-name em', $(ele)).text();
 
         if (!n.includes('二手')) {
-
-          name = 'Apple iPhone XR (64GB) - Black - [Locked to Simple Mobile Prepaid]';
-
           var temp = algorithm.editDistance(n, name);
-          // console.log(temp);
-          // console.log(n);
-          // console.log(name);
+          if (translate) {
+            var temp1 = algorithm.editDistance(n, translate);
+            // temp = (temp + temp1) / 2;
+            console.log(translate);
+            console.log(temp1);
+          }
+          console.log(temp);
+          console.log(n);
+          console.log(name);
 
           if (temp < match || (temp == match && n.length < mName.length)) {
             mPrice = $('.p-price strong', $(ele)).text();
@@ -51,6 +47,18 @@ function getPrice(keyword, name, price, callback) {
     })
     .catch(err => {
       callback(err, null, null, null);
+    });
+}
+
+
+function getPrice(keyword, name, price, callback) {
+  var url = 'https://translate.yandex.net/api/v1.5/tr.json/translate?key=' + encodeURIComponent('trnsl.1.1.20190322T053830Z.be68ef09bc438708.3d4f533342a617c24fbd002ef82f25632b16d40a') + '&text=' + encodeURIComponent(name) + '&lang=' + encodeURIComponent('en-zh');
+  axios.get(url)
+    .then(res => {
+      fetch(keyword, name, res.data.text[0], price, callback);
+    })
+    .catch(err => {
+      fetch(keyword, name, null, price, callback);
     });
 }
 
