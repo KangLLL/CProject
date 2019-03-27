@@ -28,12 +28,12 @@ function fetch(keyword, name, translate, price, callback) {
           if (translate) {
             var temp1 = algorithm.editDistance(n, translate);
             // temp = (temp + temp1) / 2;
-            console.log(translate);
-            console.log(temp1);
+            // console.log(translate);
+            // console.log(temp1);
           }
-          console.log(temp);
-          console.log(n);
-          console.log(name);
+          // console.log(temp);
+          // console.log(n);
+          // console.log(name);
 
           if (temp < match || (temp == match && n.length < mName.length)) {
             mPrice = $('.p-price strong', $(ele)).text();
