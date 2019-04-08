@@ -16,15 +16,6 @@ function load(id, callback) {
     });
 }
 
-function loadByName(name, callback) {
-  db.stage(cfg)
-    .query('select * from product where name=?', [name])
-    .finale((err, results) => {
-      if (err) return callback(err);
-      callback(null, results[0]);
-    });
-}
-
 function loadByNameWithPrice(name, callback) {
   db.stage(cfg)
     .query('select p.ID as ID, p.NAME, p.CHNAME, p.WIDTH, p.HEIGHT, p.DEPTH, p.WEIGHT, p.URL, p.CHURL, tep.USPRICE, tep.CHPRICE, tep.DATE from product p left outer join (select pr.PRODUCTID, pr.USPRICE, pr.CHPRICE, pr.DATE from price pr inner join (select PRODUCTID, max(DATE) as DATE from price group by PRODUCTID) tp on pr.PRODUCTID=tp.PRODUCTID and pr.DATE=tp.DATE) tep on tep.PRODUCTID=p.ID where p.name=?', [name])
@@ -32,6 +23,23 @@ function loadByNameWithPrice(name, callback) {
       if (err) return callback(err);
       callback(null, results[0]);
     });
+}
+
+function loadByName(name, isUS, callback) {
+  db.stage(cfg)
+    .query('select * from' + (isUS ? ' usproduct ' : ' chproduct ') + 'where name=?', [name])
+    .finale((err, results) => {
+      if (err) return callback(err);
+      callback(null, results[0]);
+    });
+}
+
+function loadUSProductByName(name, callback) {
+  loadByName(name, true, callback);
+}
+
+function loadCHProductByName(name, callback) {
+  loadByName(name, false, callback);
 }
 
 function insertOrUpdateProduct(products, isUS, callback) {
@@ -60,6 +68,15 @@ function insertOrUpdateUSProduct(products, callback) {
 
 function insertOrUpdateCHProduct(products, callback) {
   insertOrUpdateProduct(products, false, callback);
+}
+
+function insertComparision(usId, chId, callback) {
+  db.stage(cfg)
+    .execute('insert into comparison (USID, CHID) values (?, ?)', [usId, chId])
+    .finale((err, results) => {
+      if (err) return callback(err);
+      callback(null, results[0]);
+    });
 }
 
 function updateWeight(id, weight, callback) {
@@ -109,11 +126,11 @@ function getTopRankingProductForChina(top, rate, callback) {
 
 module.exports = {
   init: init,
-  load: load,
-  loadByName: loadByName,
-  loadByNameWithPrice: loadByNameWithPrice,
   insertOrUpdateUSProduct: insertOrUpdateUSProduct,
   insertOrUpdateCHProduct: insertOrUpdateCHProduct,
+  loadUSProductByName: loadUSProductByName,
+  loadCHProductByName: loadCHProductByName,
+  insertComparision: insertComparision,
   updateWeight: updateWeight,
   loadLatestPriceByProductId: loadLatestPriceByProductId,
   insertPrice: insertPrice,
