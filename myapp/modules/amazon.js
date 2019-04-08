@@ -12,26 +12,27 @@ function getPrice(name, callback) {
       var n = '';
       var price = '';
       var url = '';
+      var imgUrl = '';
       var minDistance = 1000;
       var top = cfg.amazonTop;
 
       $('h5 span', html).each((i, ele) => {
-        if ($(ele).closest('.s-shopping-adviser').length == 0 && !$(ele).closest('.sg-col-inner').find('.a-color-secondary').first().text().includes('Sponsored')) {
+        if ($(ele).closest('.s-shopping-adviser').length == 0 && !$(ele).closest('.sg-col-inner').find('.a-color-secondary').first().text().includes('Sponsored') && $(ele).closest('.sg-col-inner').parent().closest('.sg-col-inner').find('.a-offscreen').length > 0) {
           var temp = $(ele).text();
 
           var dist = algorithm.editDistance(temp.toLowerCase(), name.toLowerCase());
           if (dist < minDistance || (dist == minDistance && temp.length < n.length)) {
             minDistance = dist;
 
-            var part = $(ele).closest('.sg-col-inner');
-            while (part.find('.a-offscreen').length == 0) {
-              part = part.parent().closest('.sg-col-inner');
-            }
+            var part = $(ele).closest('.sg-col-inner').parent().closest('.sg-col-inner');
 
             price = $(part).find('.a-offscreen').first().text();
             n = temp;
             url = $(ele).parent().attr('href');
             url = url.slice(0, url.indexOf('?'));
+
+            var row = part.closest('.sg-row');
+            imgUrl = row.find('img').first().attr('src');
           }
           if (--top == 0) return false;
         }
@@ -51,10 +52,10 @@ function getPrice(name, callback) {
       //     if (--top == 0) return false;
       //   }
       // });
-      callback(null, n, price, url);
+      callback(null, n, price, url, imgUrl);
     })
     .catch(err => {
-      callback(err, null, null, null);
+      callback(err, null, null, null, null);
     });
 }
 
