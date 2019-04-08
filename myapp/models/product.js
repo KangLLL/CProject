@@ -34,13 +34,32 @@ function loadByNameWithPrice(name, callback) {
     });
 }
 
-function insertProduct(name, chname, url, churl, callback) {
+function insertOrUpdateProduct(products, isUS, callback) {
+  var exeCmd = 'insert into' + (isUS ? ' usproduct ' : ' chproduct ') + '(NAME, URL, PRICE, IMAGE) values (?, ?, ?, ?) on duplicate key update URL = ?, PRICE = ?, IMAGE = ?';
+  var params = [];
+  products.forEach((product) => {
+    params.push([product.name,
+    product.url,
+    product.price,
+    product.image,
+    product.url,
+    product.price,
+    product.image])
+  });
   db.stage(cfg)
-    .execute('insert into product(NAME, CHNAME, URL, CHURL) values (?, ?, ?, ?)', [name, chname, url, churl])
+    .execute(exeCmd, params)
     .finale((err, results) => {
       if (err) return callback(err);
-      callback(null, results[0]);
+      else return callback(err, results[0]);
     });
+}
+
+function insertOrUpdateUSProduct(products, callback) {
+  insertOrUpdateProduct(products, true, callback);
+}
+
+function insertOrUpdateCHProduct(products, callback) {
+  insertOrUpdateProduct(products, false, callback);
 }
 
 function updateWeight(id, weight, callback) {
@@ -93,7 +112,8 @@ module.exports = {
   load: load,
   loadByName: loadByName,
   loadByNameWithPrice: loadByNameWithPrice,
-  insertProduct: insertProduct,
+  insertOrUpdateUSProduct: insertOrUpdateUSProduct,
+  insertOrUpdateCHProduct: insertOrUpdateCHProduct,
   updateWeight: updateWeight,
   loadLatestPriceByProductId: loadLatestPriceByProductId,
   insertPrice: insertPrice,

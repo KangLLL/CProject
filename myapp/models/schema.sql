@@ -1,7 +1,8 @@
 use capstone;
 DROP TABLE IF EXISTS `exchangerate`;
-DROP TABLE IF EXISTS `price`;
-DROP TABLE IF EXISTS `product`;
+DROP TABLE IF EXISTS `comparison`;
+DROP TABLE IF EXISTS `usproduct`;
+DROP TABLE IF EXISTS `chproduct`;
 
 CREATE TABLE `exchangerate` (
   `ID` bigint(20) NOT NULL AUTO_INCREMENT,
@@ -12,31 +13,37 @@ CREATE TABLE `exchangerate` (
   CONSTRAINT date_type_unique UNIQUE (`DATE`, `TYPE`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
-CREATE TABLE `product` (
+CREATE TABLE `usproduct` (
   `ID` bigint(20) NOT NULL AUTO_INCREMENT,
   `NAME` varchar(255) CHARACTER SET latin1 COLLATE latin1_bin NOT NULL,
-  `CHNAME` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `URL` varchar(1000) CHARACTER SET latin1 COLLATE latin1_bin NOT NULL,
-  `CHURL` varchar(1000) CHARACTER SET latin1 COLLATE latin1_bin NOT NULL,
-  `WIDTH` decimal(10,2) DEFAULT NULL,
-  `HEIGHT` decimal(10, 2) DEFAULT NULL,
-  `DEPTH` decimal(10, 2) DEFAULT NULL,
+  `IMAGE` varchar(1000) CHARACTER SET latin1 COLLATE latin1_bin NOT NULL,
+  `PRICE` decimal(10, 2) DEFAULT NULL,
   `WEIGHT` decimal(10, 2) DEFAULT NULL,
   PRIMARY KEY(`ID`),
   KEY `IDX_NAME` (`NAME`),
   CONSTRAINT name_unique UNIQUE (`NAME`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
-
-CREATE TABLE `price` (
+CREATE TABLE `chproduct` (
   `ID` bigint(20) NOT NULL AUTO_INCREMENT,
-  `USPRICE` decimal(10, 2) DEFAULT NULL,
-  `CHPRICE` decimal(10, 2) DEFAULT NULL,
-  `DATE` datetime NOT NULL,
-  `PRODUCTID` bigint(20) NOT NULL,
+  `NAME` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `URL` varchar(1000) CHARACTER SET latin1 COLLATE latin1_bin NOT NULL,
+  `IMAGE` varchar(1000) CHARACTER SET latin1 COLLATE latin1_bin NOT NULL,
+  `PRICE` decimal(10, 2) DEFAULT NULL,
   PRIMARY KEY(`ID`),
-  KEY `IDX_PRODUCT` (`PRODUCTID`),
-  KEY `IDX_PRODUCT_DATE` (`PRODUCTID`, `DATE`),
-  CONSTRAINT `PRICE_PRODUCT_FK1` FOREIGN KEY (`PRODUCTID`) REFERENCES `product` (`ID`),
-  CONSTRAINT date_product_unique UNIQUE (`DATE`, `PRODUCTID`)
+  KEY `IDX_NAME` (`NAME`),
+  CONSTRAINT name_unique UNIQUE (`NAME`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+
+CREATE TABLE `comparison` (
+  `ID` bigint(20) NOT NULL AUTO_INCREMENT,
+  `USID` bigint(20) NOT NULL,
+  `CHID` bigint(20) NOT NULL,
+  PRIMARY KEY(`ID`),
+  KEY `IDX_PRODUCT` (`USID`, `CHID`),
+  CONSTRAINT `PRICE_PRODUCT_FK1` FOREIGN KEY (`USID`) REFERENCES `usproduct` (`ID`),
+  CONSTRAINT `PRICE_PRODUCT_FK2` FOREIGN KEY (`CHID`) REFERENCES `chproduct` (`ID`),
+  CONSTRAINT product_unique UNIQUE (`USID`, `CHID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
