@@ -33,12 +33,27 @@ router.get('/', function (req, res, next) {
 });
 
 router.post('/', function (req, res, next) {
-  priceFetcher.getPrices(req.body.name, (err, name, usprice, url, chname, chprice, churl) => {
+  priceFetcher.getProducts(req.body.name, (err, usproducts, chproducts) => {
     if (err) return next(err);
-    if (!name) return res.render('no-product', { title: 'No result' });
+    res.render('product', { title: 'Products', usProduct: usproducts[0], chProducts: chproducts });
+  });
+
+  // priceFetcher.getPrices(req.body.name, (err, name, usprice, url, chname, chprice, churl) => {
+  //   if (err) return next(err);
+  //   if (!name) return res.render('no-product', { title: 'No result' });
+  //   exchange.getExchangeRates((err, result) => {
+  //     if (err) return next(err);
+  //     res.render('price', { title: 'Price', prices: [{ usName: name, usPrice: parseFloat(usprice), chName: chname, chPrice: parseFloat(chprice), url: url, churl: churl }], tax: tax, exchange: result });
+  //   });
+  // });
+});
+
+router.get('/price', function (req, res, next) {
+  priceFetcher.getPrices(decodeURIComponent(req.query.name), decodeURIComponent(req.query.chName), (err, price) => {
+    if (err) return next(err);
     exchange.getExchangeRates((err, result) => {
       if (err) return next(err);
-      res.render('price', { title: 'Price', prices: [{ usName: name, usPrice: parseFloat(usprice), chName: chname, chPrice: parseFloat(chprice), url: url, churl: churl }], tax: tax, exchange: result });
+      res.render('price', { title: 'Price', prices: [price], tax: tax, exchange: result });
     });
   });
 });

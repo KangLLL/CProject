@@ -1,27 +1,27 @@
 extends layout
-block resource
-  link(rel="stylesheet", href='/stylesheets/loader.css')
 
 block content
-  div(style="display:none")#loader
-    .loader-container
-      .loader
-    .loader-text
-      br
-      p loading...
   .container
-    .row
-      .col-sm
-      .col-sm
-        form(method="POST", action="./search/product", onsubmit="$('#loader').show();$('.container').hide();")
-          .form-group
-            label(for="product") Please select which product you want to compare
-            - products.forEach(function(product) {
-              br
-              br
-              input(type="radio", name="product", value=product.ID, style="margin-right: 10px").btn.btn-outline-info
-              label(for="product") #{product.NAME}
-            - });
-            <hr>
-            button.btn.btn-primary(type="submit") Search
-      .col-sm
+      .row
+      h4.text-danger Please select which product you want to compare
+      br
+      table.table.table-hover 
+        thead.thead-inverse
+          tr
+            th.cell US Name
+            th.cell US Photo
+            th.cell China Name
+            th.cell China Photo
+        - chProducts.forEach((product)=> {
+          tr(onclick="location=encodeURI('./search/price?name=" + usProduct.name + "&chName=" + product.name + "')")
+            td.cell
+              a(target="_blank", href="https://www.amazon.com"+usProduct.url) 
+                strong #{usProduct.name}
+            td.cell
+              img(src=usProduct.image, width=102, height=218)
+            td.cell
+              a(target="_blank", href=product.url) 
+                strong #{product.name}
+            td.cell
+              img(src=product.image, width=200, height=200)
+        - });

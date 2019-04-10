@@ -52,10 +52,10 @@ function getPrice(name, callback) {
       //     if (--top == 0) return false;
       //   }
       // });
-      callback(null, n, price, url, imgUrl);
+      callback(null, [{ name: n, price: price, url: url, image: imgUrl }]);
     })
     .catch(err => {
-      callback(err, null, null, null, null);
+      callback(err, null);
     });
 }
 
