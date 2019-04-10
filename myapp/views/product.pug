@@ -14,16 +14,16 @@ block content
             th.cell China Photo
         - chProducts.forEach((product)=> {
           tr(onclick="getPrice('" + usProduct.name + "','" + product.name + "')")
-            td.cell
+            td(width="25%").cell
               a(target="_blank", href="https://www.amazon.com"+usProduct.url) 
                 strong #{usProduct.name}
-            td.cell
-              img(src=usProduct.image, width=102, height=218)
-            td.cell
+            td(width="25%").cell
+              img(src=background=usProduct.image, width="100%")
+            td(width="25%").cell
               a(target="_blank", href=product.url) 
                 strong #{product.name}
-            td.cell
-              img(src=product.image, width=200, height=200)
+            td(width="25%").cell
+              img(src=product.image, width="100%")
         - });
 
   script.
