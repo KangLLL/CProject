@@ -7,24 +7,6 @@ function init(_cfg, _models, callback) {
   callback();
 }
 
-function load(id, callback) {
-  db.stage(cfg)
-    .query('select * from product where id=?', [id])
-    .finale((err, results) => {
-      if (err) return callback(err);
-      callback(null, results[0]);
-    });
-}
-
-function loadByNameWithPrice(name, callback) {
-  db.stage(cfg)
-    .query('select p.ID as ID, p.NAME, p.CHNAME, p.WIDTH, p.HEIGHT, p.DEPTH, p.WEIGHT, p.URL, p.CHURL, tep.USPRICE, tep.CHPRICE, tep.DATE from product p left outer join (select pr.PRODUCTID, pr.USPRICE, pr.CHPRICE, pr.DATE from price pr inner join (select PRODUCTID, max(DATE) as DATE from price group by PRODUCTID) tp on pr.PRODUCTID=tp.PRODUCTID and pr.DATE=tp.DATE) tep on tep.PRODUCTID=p.ID where p.name=?', [name])
-    .finale((err, results) => {
-      if (err) return callback(err);
-      callback(null, results[0]);
-    });
-}
-
 function loadByName(name, isUS, callback) {
   db.stage(cfg)
     .query('select * from' + (isUS ? ' usproduct ' : ' chproduct ') + 'where name=?', [name])
@@ -81,25 +63,7 @@ function insertComparision(usId, chId, callback) {
 
 function updateWeight(id, weight, callback) {
   db.stage(cfg)
-    .execute('update product set WEIGHT=? where ID=?', [weight, id])
-    .finale((err, results) => {
-      if (err) return callback(err);
-      callback(null, results[0]);
-    });
-}
-
-function loadLatestPriceByProductId(pid, callback) {
-  db.stage(cfg)
-    .query('select p.NAME, p.USPRICE, p.CHPRICE, p.DATE from price p where p.PRODUCTID=? AND p.DATE=(select max(pp.DATE) from price pp where pp.PRODUCTID=?)', [pid, pid])
-    .finale((err, results) => {
-      if (err) return callback(err);
-      callback(null, results);
-    });
-}
-
-function insertPrice(pid, usprice, chprice, date, callback) {
-  db.stage(cfg)
-    .execute('insert into price(USPRICE, CHPRICE, DATE, PRODUCTID) values(?, ?, ?, ?)', [usprice, chprice, date, pid])
+    .execute('update usproduct set WEIGHT=? where ID=?', [weight, id])
     .finale((err, results) => {
       if (err) return callback(err);
       callback(null, results[0]);
@@ -132,8 +96,6 @@ module.exports = {
   loadCHProductByName: loadCHProductByName,
   insertComparision: insertComparision,
   updateWeight: updateWeight,
-  loadLatestPriceByProductId: loadLatestPriceByProductId,
-  insertPrice: insertPrice,
   getTopRankingProductForUS: getTopRankingProductForUS,
   getTopRankingProductForChina: getTopRankingProductForChina
 };

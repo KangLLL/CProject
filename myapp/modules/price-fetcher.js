@@ -104,6 +104,7 @@ function getPrices(usName, chName, callback) {
       (cb) => {
         models.Product.loadUSProductByName(usName, (err, result) => {
           if (err) return cb(err);
+          updateProductWeight(result);
           cb(null, result);
         });
       },
