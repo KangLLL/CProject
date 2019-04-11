@@ -7,7 +7,7 @@ const cfg = require('../config/config.json');
 const feature = require('./feature-fetcher');
 const async = require('async');
 
-function getProducts(keyword, callback) {
+function getProducts(keyword, chKeyword, callback) {
   var name = '';
   var price = '';
   async.series(
@@ -25,7 +25,7 @@ function getProducts(keyword, callback) {
         });
       },
       (cb) => {
-        jd.getPrice(keyword, name, price, (err, products) => {
+        jd.getPrice(chKeyword, name, price, (err, products) => {
           products.forEach((product) => {
             product.price = product.price.replace(/,|￥|¥/g, '');
           });

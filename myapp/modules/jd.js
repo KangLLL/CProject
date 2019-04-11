@@ -4,7 +4,7 @@ const algorithm = require('./algorithm');
 
 function fetch(keyword, name, price, callback) {
   price = parseFloat(price);
-  var url = 'https://search.jd.com/Search?keyword=' + encodeURIComponent(keyword) + '&ev=exprice_' + (price * 2) + '-' + (price * 50);
+  var url = 'https://search.jd.com/Search?keyword=' + encodeURIComponent(keyword) + '&enc=utf-8&ev=exprice_' + (price * 2) + '-' + (price * 50);
   console.log(url);
   axios.get(url)
     .then(res => {
