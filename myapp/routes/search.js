@@ -35,6 +35,7 @@ router.get('/', function (req, res, next) {
 router.post('/', function (req, res, next) {
   priceFetcher.getProducts(req.body.name, (err, usproducts, chproducts) => {
     if (err) return next(err);
+    if (usproducts.length == 0 || chproducts.length == 0) return res.render('no-product', { title: 'No result' });
     res.render('product', { title: 'Products', usProduct: usproducts[0], chProducts: chproducts });
   });
 

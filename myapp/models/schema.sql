@@ -15,7 +15,7 @@ CREATE TABLE `exchangerate` (
 
 CREATE TABLE `usproduct` (
   `ID` bigint(20) NOT NULL AUTO_INCREMENT,
-  `NAME` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `NAME` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `URL` varchar(1000) CHARACTER SET latin1 COLLATE latin1_bin NOT NULL,
   `IMAGE` varchar(1000) CHARACTER SET latin1 COLLATE latin1_bin NOT NULL,
   `PRICE` decimal(10, 2) DEFAULT NULL,
@@ -27,7 +27,7 @@ CREATE TABLE `usproduct` (
 
 CREATE TABLE `chproduct` (
   `ID` bigint(20) NOT NULL AUTO_INCREMENT,
-  `NAME` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `NAME` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `URL` varchar(1000) CHARACTER SET latin1 COLLATE latin1_bin NOT NULL,
   `IMAGE` varchar(1000) CHARACTER SET latin1 COLLATE latin1_bin NOT NULL,
   `PRICE` decimal(10, 2) DEFAULT NULL,

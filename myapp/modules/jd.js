@@ -4,7 +4,7 @@ const algorithm = require('./algorithm');
 
 function fetch(keyword, name, price, callback) {
   price = parseFloat(price);
-  var url = 'https://search.jd.com/Search?keyword=' + encodeURIComponent(keyword) + '&ev=exprice_' + (price * 3) + '-' + (price * 30);
+  var url = 'https://search.jd.com/Search?keyword=' + encodeURIComponent(keyword) + '&ev=exprice_' + (price * 2) + '-' + (price * 50);
   console.log(url);
   axios.get(url)
     .then(res => {
@@ -24,7 +24,7 @@ function fetch(keyword, name, price, callback) {
       $('.gl-item .gl-i-wrap', html).each((i, ele) => {
         var n = $('.p-name em', $(ele)).text();
 
-        if (!n.includes('二手')) {
+        if (!n.includes('二手') && $('.p-price strong', $(ele)).text().length > 1) {
           var temp = algorithm.editDistance(n, name);
 
           // var temp1 = algorithm.editDistance(n, translate);

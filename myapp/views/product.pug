@@ -13,7 +13,7 @@ block content
             th.cell China Name
             th.cell China Photo
         - chProducts.forEach((product)=> {
-          tr(onclick="getPrice('" + usProduct.name + "','" + product.name + "')")
+          tr(onclick="getPrice('" + usProduct.name.replace(/'/g, "\\'") + "','" + product.name.replace(/'/g, "\\'") + "')")
             td(width="20%").cell
               a(target="_blank", href="https://www.amazon.com"+usProduct.url) 
                 strong #{usProduct.name}
@@ -28,5 +28,7 @@ block content
 
   script.
     function getPrice(usName, chName) {
+      usName = usName.replace(/\\'/g, "'");
+      chName = chName.replace(/\\'/g, "'");
       location="./search/price?name=" + encodeURIComponent(usName) + "&chName=" + encodeURIComponent(chName);
     }

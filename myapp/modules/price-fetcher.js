@@ -27,7 +27,7 @@ function getProducts(keyword, callback) {
       (cb) => {
         jd.getPrice(keyword, name, price, (err, products) => {
           products.forEach((product) => {
-            product.price = product.price.replace(/,|￥/g, '');
+            product.price = product.price.replace(/,|￥|¥/g, '');
           });
           if (err) return cb(err);
           models.Product.insertOrUpdateCHProduct(products, (err) => {
