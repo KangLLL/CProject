@@ -14,6 +14,10 @@ function extractWeightFromTable(id, html) {
   return weight;
 }
 
+function extractWeightFromName(name) {
+  
+}
+
 function getWeight(url, callback) {
   axios.get(url)
     .then(res => {
