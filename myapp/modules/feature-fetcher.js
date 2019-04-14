@@ -14,11 +14,9 @@ function extractWeightFromTable(id, html) {
   return weight;
 }
 
-function extractWeightFromName(name) {
-  
-}
-
-function getWeight(url, callback) {
+function getWeight(name, url, callback) {
+  var partern =  /(?:\d+\.)?\d+\s(?:OZ|oz)/g;
+  if (partern.exec(name)) return callback(null, weightUtil.convertWeight(partern.exec(name)[0]));
   axios.get(url)
     .then(res => {
       var html = res.data;
@@ -36,7 +34,7 @@ function getWeight(url, callback) {
       });
 
       var info = title.parent().text();
-      var partern = /Weight:\s(\d+\.?\d+\s(?:lbs|ounces|pounds|ozs|lb|ounce|pound|oz))/g;
+      var partern = /Weight:\s((?:\d+\.)?\d+\s(?:lbs|ounces|pounds|ozs|lb|ounce|pound|oz))/g;
       if (info) weight = partern.exec(info)[1];
       
       if (weight) return callback(null, weightUtil.convertWeight(weight));
@@ -51,7 +49,7 @@ function getWeight(url, callback) {
       title = $('#feature-bullets .a-list-item', html).filter((i, ele)=>{
         return $(ele).text().includes('oz') || $(ele).text().includes('OZ');
       });
-      partern = /(\d+\.?\d+\s(?:OZ|oz))\s/g;
+      partern = /((?:\d+\.)?\d+\s(?:OZ|oz))\s/g;
       if (title.text()) weight = partern.exec(title.text())[1];
 
       if (weight) return callback(null, weightUtil.convertWeight(weight));
