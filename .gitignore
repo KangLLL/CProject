@@ -2,9 +2,11 @@
 
 # dependencies
 /myapp/node_modules
+/cron/node_modules
 
 # config
 /myapp/config/db.json
+/cron/config/db.json
 
 # misc
 .DS_Store
