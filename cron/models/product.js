@@ -52,7 +52,7 @@ function customWhereIn(columnName, values) {
 }
 
 function loadProducts(ids, isUS, callback) {
-  var queryCmd = 'select ID, NAME' + (isUS ? ', WEIGHT ' : ' ') + 'from ' + (isUS ? 'usproduct ' : 'chproduct ') + customWhereIn('ID', ids);
+  var queryCmd = 'select ID, NAME, URL' + (isUS ? ', WEIGHT ' : ' ') + 'from ' + (isUS ? 'usproduct ' : 'chproduct ') + customWhereIn('ID', ids);
   db.stage(cfg)
     .query(queryCmd)
     .finale((err, results) => {
