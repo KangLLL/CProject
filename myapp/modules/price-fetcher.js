@@ -16,8 +16,10 @@ function getProducts(keyword, chKeyword, callback) {
         ama.getPrice(keyword, (err, products) => {
           if (err) return cb(err);
           name = products[0].name;
-          price = products[0].price.replace(/,|\$/g, '');
-          products[0].price = price;
+          products.forEach((product) => {
+            product.price = product.price.replace(/,|\$/g, '');
+          });
+          price = products[0].price;
           models.Product.insertOrUpdateUSProduct(products, (err) => {
             if (err) return cb(err);
             cb(null, products);

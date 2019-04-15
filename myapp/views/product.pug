@@ -1,34 +1,14 @@
 extends layout
 
 block content
-  .container
-      .row
-      h4.text-danger Please select which product you want to compare
-      br
-      table.table.table-hover 
-        thead.thead-inverse
-          tr
-            th.cell US Name
-            th.cell US Photo
-            th.cell China Name
-            th.cell China Photo
-        - chProducts.forEach((product)=> {
-          tr(onclick="getPrice('" + usProduct.name.replace(/'/g, "\\'") + "','" + product.name.replace(/'/g, "\\'") + "')")
-            td(width="20%").cell
-              a(target="_blank", href="https://www.amazon.com"+usProduct.url) 
-                strong #{usProduct.name}
-            td(width="30%", height=200).cell
-              img(src=usProduct.image, width="100%", height="100%", style="object-fit:contain;")
-            td(width="20%").cell
-              a(target="_blank", href=product.url) 
-                strong #{product.name}
-            td(width="30%", height=200).cell
-              img(src=product.image, width="100%", height="100%", style="object-fit:contain;")
-        - });
+  .container#root
+  script(src="https://unpkg.com/react@16/umd/react.development.js" crossorigin)
+  script(src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin)
+  script(src="https://unpkg.com/babel-standalone@6/babel.min.js")
+  
 
   script.
-    function getPrice(usName, chName) {
-      usName = usName.replace(/\\'/g, "'");
-      chName = chName.replace(/\\'/g, "'");
-      location="./search/price?name=" + encodeURIComponent(usName) + "&chName=" + encodeURIComponent(chName);
-    }
+    const usProducts = !{JSON.stringify(us)};
+    const chProducts = !{JSON.stringify(ch)};
+
+  script(type="text/babel" src="/javascripts/products.js")
