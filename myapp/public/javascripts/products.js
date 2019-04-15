@@ -13,7 +13,7 @@ class ProductTable extends React.Component {
             </a>
           </td>
           <td width="30%" height="100" className="cell">
-            <img src={product.image} width="100%" height="100%" />
+            <img src={product.image} width="100%" height="100%" style={{objectFit: "contain"}}/>
           </td>
         </tr>
       );
@@ -43,14 +43,14 @@ class CompareTable extends React.Component {
   render() {
     const rows = this.props.products.map((product, step) => {
       return (
-        <tr key={step} onClick={e => { getPrice(usProduct.name.replace(/'/g, "\\'"), product.name.replace(/'/g, "\\'")); }}>
+        <tr key={step} onClick={e => { this.getPrice(this.props.usProduct.name.replace(/'/g, "\\'"), product.name.replace(/'/g, "\\'")); }}>
           <td width="20%" className="cell">
             <a target="_blank" href={"https://www.amazon.com" + this.props.usProduct.url}>
               <strong> {this.props.usProduct.name} </strong>
             </a>
           </td>
           <td width="30%" height="200" className="cell">
-            <img src={this.props.usProduct.image} width="100%" height="100%" />
+            <img src={this.props.usProduct.image} width="100%" height="100%" style={{objectFit: "contain"}}/>
           </td>
           <td width="20%" className="cell">
             <a target="_blank" href={product.url}>
@@ -58,7 +58,7 @@ class CompareTable extends React.Component {
             </a>
           </td>
           <td width="30%" height="200" className="cell">
-            <img src={product.image} width="100%" height="100%" />
+            <img src={product.image} width="100%" height="100%" style={{objectFit: "contain"}}/>
           </td>
         </tr>
       );
@@ -126,5 +126,3 @@ class ResultComp extends React.Component {
 }
 
 ReactDOM.render(<ResultComp />, document.getElementById("root"));
-alert(usProducts[0].image);
-alert(usProducts[1].image);

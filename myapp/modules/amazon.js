@@ -35,8 +35,12 @@ function getPrice(name, callback) {
           url = $(ele).parent().attr('href');
           url = url.slice(0, url.indexOf('?'));
 
-          var row = part.closest('.sg-row');
-          imgUrl = row.find('img').first().attr('src');
+          imgUrl = part.find('img').first().attr('src');
+
+          if (!imgUrl) {
+            var row = part.closest('.sg-row');
+            imgUrl = row.find('img').first().attr('src');
+          }
 
           result.push({ name: n, price: price, url: url, image: imgUrl });
 
