@@ -17,8 +17,9 @@ function extractWeightFromTable(id, html) {
 }
 
 function getWeight(name, html) {
-  var partern = /(?:\d+\.)?\d+\s(?:OZ|oz)/g;
-  if (partern.exec(name)) return weightUtil.convertWeight(partern.exec(name)[0]);
+  var partern = /(?:\d+\.)?\d+\s(?:OZ|oz|Ounce|ounce)/g;
+  var r = partern.exec(name);
+  if (r) return weightUtil.convertWeight(r[0]);
 
   var title = $('td.a-text-bold', html).filter((i, ele) => {
     return $(ele).children().first().text() == 'Weight';
@@ -47,12 +48,23 @@ function getWeight(name, html) {
   title = $('#feature-bullets .a-list-item', html).filter((i, ele) => {
     return $(ele).text().includes('oz') || $(ele).text().includes('OZ');
   });
-  partern = /((?:\d+\.)?\d+\s(?:OZ|oz))\s/g;
+  partern = /((?:\d+\.)?\d+\s(?:OZ|oz|Ounce|ounce|Ounces|ounces))/g;
   if (title.text()) weight = partern.exec(title.text())[1];
 
   if (weight) return weightUtil.convertWeight(weight);
 
-  return null;
+  title = $('#detailBullets_feature_div .a-list-item', html).filter((i, ele) => {
+    return $(ele).text().includes('ounces') || $(ele).text().includes('Ounces') || $(ele).text().includes('oz') || $(ele).text().includes('OZ');
+  });
+  if (title.text()) weight = partern.exec(title.text())[1];
+  if (weight) return weightUtil.convertWeight(weight);
+
+
+  title = $('#detail-bullets li', html).filter((i, ele) => {
+    return $(ele).text().includes('ounces') || $(ele).text().includes('Ounces') || $(ele).text().includes('oz') || $(ele).text().includes('OZ');
+  });
+
+  return '';
 }
 
 function getUSInformation(name, url, weight, callback) {
@@ -61,8 +73,8 @@ function getUSInformation(name, url, weight, callback) {
       var html = res.data;
       var price = $('#cerberus-data-metrics', html).prop('data-asin-price');
 
-      if (!price) price = $('.priceBlockBuyingPriceString', html).first.text(); 
-      if (price) price = price.replace(/,|￥|¥/g, '');
+      if (!price) price = $('.priceBlockBuyingPriceString', html).first().text();
+      if (price) price = price.replace(/,|\$/g, '');
 
       if (!weight) {
         weight = getWeight(name, html)

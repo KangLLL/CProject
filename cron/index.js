@@ -13,6 +13,7 @@ models.init((err) => {
             async.series(
               results.map((result) => {
                 return (cb) => {
+                  if (result.WEIGHT) return cb();
                   fetcher.getUSInformation(result.NAME, 'https://www.amazon.com' + result.URL, result.WEIGHT, (err, price, weight) => {
                     if (!err) {
                       models.Product.updateUSPrice(result.ID, price, (e, r) => {
