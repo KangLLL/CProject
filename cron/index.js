@@ -13,9 +13,22 @@ models.init((err) => {
             async.series(
               results.map((result) => {
                 return (cb) => {
-                  return cb();
                   fetcher.getUSInformation(result.NAME, 'https://www.amazon.com' + result.URL, result.WEIGHT, (err, price, weight) => {
-                    setTimeout(() => { cb(null); }, 10000);
+                    if (!err) {
+                      models.Product.updateUSPrice(result.ID, price, (e, r) => {
+                        if (weight) {
+                          models.Product.updateWeight(result.ID, weight, (e, r) => {
+                            setTimeout(() => { cb(); }, 30000);
+                          });
+                        }
+                        else {
+                          setTimeout(() => { cb(); }, 30000);
+                        }
+                      });
+                    }
+                    else {
+                      setTimeout(() => { cb(); }, 30000);
+                    }
                   });
                 };
               }), (err) => {
@@ -32,7 +45,7 @@ models.init((err) => {
             async.series(
               results.map((result) => {
                 return (cb) => {
-                  fetcher.getCHInformation("http:"+ result.URL, (err, price) => {
+                  fetcher.getCHInformation("http:" + result.URL, (err, price) => {
                     setTimeout(() => { cb(null); }, 10000);
                   });
                 };

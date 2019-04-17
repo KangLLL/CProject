@@ -16,49 +16,43 @@ function extractWeightFromTable(id, html) {
   return weight;
 }
 
-function getWeight(name, url, callback) {
+function getWeight(name, html) {
   var partern = /(?:\d+\.)?\d+\s(?:OZ|oz)/g;
-  if (partern.exec(name)) return callback(null, weightUtil.convertWeight(partern.exec(name)[0]));
-  axios.get(url)
-    .then(res => {
-      var html = res.data;
+  if (partern.exec(name)) return weightUtil.convertWeight(partern.exec(name)[0]);
 
-      var title = $('td.a-text-bold', html).filter((i, ele) => {
-        return $(ele).children().first().text() == 'Weight';
-      });
+  var title = $('td.a-text-bold', html).filter((i, ele) => {
+    return $(ele).children().first().text() == 'Weight';
+  });
 
-      var weight = title.next().children().first().text();
+  var weight = title.next().children().first().text();
 
-      if (weight) return callback(null, weightUtil.convertWeight(weight));
+  if (weight) return weightUtil.convertWeight(weight);
 
-      title = $('#productDescription strong', html).filter((i, ele) => {
-        return $(ele).text() == 'Weight';
-      });
+  title = $('#productDescription strong', html).filter((i, ele) => {
+    return $(ele).text() == 'Weight';
+  });
 
-      var info = title.parent().text();
-      var partern = /Weight:\s((?:\d+\.)?\d+\s(?:lbs|ounces|pounds|ozs|lb|ounce|pound|oz))/g;
-      if (info) weight = partern.exec(info)[1];
+  var info = title.parent().text();
+  var partern = /Weight:\s((?:\d+\.)?\d+\s(?:lbs|ounces|pounds|ozs|lb|ounce|pound|oz))/g;
+  if (info) weight = partern.exec(info)[1];
 
-      if (weight) return callback(null, weightUtil.convertWeight(weight));
+  if (weight) return weightUtil.convertWeight(weight);
 
+  weight = extractWeightFromTable('productDetails_techSpec_section_2', html);
+  if (weight) return weightUtil.convertWeight(weight);
 
-      weight = extractWeightFromTable('productDetails_techSpec_section_2', html);
-      if (weight) return callback(null, weightUtil.convertWeight(weight));
+  weight = extractWeightFromTable('productDetails_detailBullets_sections1', html);
+  if (weight) return weightUtil.convertWeight(weight);
 
-      weight = extractWeightFromTable('productDetails_detailBullets_sections1', html);
-      if (weight) return callback(null, weightUtil.convertWeight(weight));
+  title = $('#feature-bullets .a-list-item', html).filter((i, ele) => {
+    return $(ele).text().includes('oz') || $(ele).text().includes('OZ');
+  });
+  partern = /((?:\d+\.)?\d+\s(?:OZ|oz))\s/g;
+  if (title.text()) weight = partern.exec(title.text())[1];
 
-      title = $('#feature-bullets .a-list-item', html).filter((i, ele) => {
-        return $(ele).text().includes('oz') || $(ele).text().includes('OZ');
-      });
-      partern = /((?:\d+\.)?\d+\s(?:OZ|oz))\s/g;
-      if (title.text()) weight = partern.exec(title.text())[1];
+  if (weight) return weightUtil.convertWeight(weight);
 
-      if (weight) return callback(null, weightUtil.convertWeight(weight));
-    })
-    .catch(err => {
-      callback(err, null);
-    });
+  return null;
 }
 
 function getUSInformation(name, url, weight, callback) {
@@ -66,7 +60,15 @@ function getUSInformation(name, url, weight, callback) {
     .then(res => {
       var html = res.data;
       var price = $('#cerberus-data-metrics', html).prop('data-asin-price');
-      callback(err, price, weight);
+
+      if (!price) price = $('.priceBlockBuyingPriceString', html).first.text(); 
+      if (price) price = price.replace(/,|￥|¥/g, '');
+
+      if (!weight) {
+        weight = getWeight(name, html)
+      }
+
+      callback(null, price, weight);
     })
     .catch(err => {
       callback(err, null, null);
