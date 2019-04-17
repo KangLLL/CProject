@@ -1,5 +1,6 @@
 const axios = require('axios');
 const $ = require('cheerio');
+const gbk = require('gbk');
 const weightUtil = require('./weight');
 
 function extractWeightFromTable(id, html) {
