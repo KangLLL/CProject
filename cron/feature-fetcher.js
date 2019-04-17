@@ -1,7 +1,8 @@
 const axios = require('axios');
 const $ = require('cheerio');
-const gbk = require('gbk');
 const weightUtil = require('./weight');
+
+const iconv = require('iconv-lite');
 
 function extractWeightFromTable(id, html) {
   var selector = '#' + id + ' th';
@@ -73,8 +74,9 @@ function getUSInformation(name, url, weight, callback) {
 }
 
 function getCHInformation(url, callback) {
-  axios.get(url)
+  axios.get(url, { 'headers': { 'Content-Type': 'text/html; charset=utf8' } })
     .then(res => {
+      // var html = iconv.decode(Buffer.from(res.data, 'gb2312'), 'utf8');
       var html = res.data;
       var price = $('.summary-price', html).first();
       var result = $('.p-price', price).first().text();
