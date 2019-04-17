@@ -8,7 +8,7 @@ function extractWeightFromTable(id, html) {
   var selector = '#' + id + ' th';
   var weight = null;
   $(selector, html).each((i, ele) => {
-    if ($(ele).text().trim() == 'Item Weight') {
+    if ($(ele).text().trim() == 'Shipping Weight') {
       weight = $(ele).next().text().trim();
       return false;
     }
@@ -16,53 +16,46 @@ function extractWeightFromTable(id, html) {
   return weight;
 }
 
+function extractWeightFromUl(id, html) {
+  var selector = '#' + id + ' .a-list-item';
+  var weight = null;
+  $(selector, html).each((i, ele) => {
+    if ($(ele).children().first().text().trim() == 'Shipping Weight:') {
+      weight = $(ele).children().last().text().trim();
+      return false;
+    }
+  });
+  return weight;
+}
+
+function extractWeightFromLi(id, html) {
+  var selector = '#' + id + ' li';
+  var weight = null;
+  $(selector, html).each((i, ele) => {
+    if ($(ele).text().includes('Shipping Weight')) {
+      weight = $(ele).text().trim();
+      return false;
+    }
+  });
+  return weight;
+}
+
 function getWeight(name, html) {
-  var partern = /(?:\d+\.)?\d+\s(?:OZ|oz|Ounce|ounce)/g;
-  var r = partern.exec(name);
-  if (r) return weightUtil.convertWeight(r[0]);
-
-  var title = $('td.a-text-bold', html).filter((i, ele) => {
-    return $(ele).children().first().text() == 'Weight';
-  });
-
-  var weight = title.next().children().first().text();
-
-  if (weight) return weightUtil.convertWeight(weight);
-
-  title = $('#productDescription strong', html).filter((i, ele) => {
-    return $(ele).text() == 'Weight';
-  });
-
-  var info = title.parent().text();
-  var partern = /Weight:\s((?:\d+\.)?\d+\s(?:lbs|ounces|pounds|ozs|lb|ounce|pound|oz))/g;
-  if (info) weight = partern.exec(info)[1];
-
-  if (weight) return weightUtil.convertWeight(weight);
-
-  weight = extractWeightFromTable('productDetails_techSpec_section_2', html);
-  if (weight) return weightUtil.convertWeight(weight);
-
+  // get weight from additional information & product information
   weight = extractWeightFromTable('productDetails_detailBullets_sections1', html);
   if (weight) return weightUtil.convertWeight(weight);
 
-  title = $('#feature-bullets .a-list-item', html).filter((i, ele) => {
-    return $(ele).text().includes('oz') || $(ele).text().includes('OZ');
-  });
-  partern = /((?:\d+\.)?\d+\s(?:OZ|oz|Ounce|ounce|Ounces|ounces))/g;
-  if (title.text()) weight = partern.exec(title.text())[1];
-
+  // get weight from product description
+  weight = extractWeightFromUl('detailBullets_feature_div', html);
   if (weight) return weightUtil.convertWeight(weight);
 
-  title = $('#detailBullets_feature_div .a-list-item', html).filter((i, ele) => {
-    return $(ele).text().includes('ounces') || $(ele).text().includes('Ounces') || $(ele).text().includes('oz') || $(ele).text().includes('OZ');
-  });
-  if (title.text()) weight = partern.exec(title.text())[1];
+  // get weight from product detail
+  weight = extractWeightFromLi('detail-bullets', html);
   if (weight) return weightUtil.convertWeight(weight);
 
-
-  title = $('#detail-bullets li', html).filter((i, ele) => {
-    return $(ele).text().includes('ounces') || $(ele).text().includes('Ounces') || $(ele).text().includes('oz') || $(ele).text().includes('OZ');
-  });
+  // get weight from name
+  var partern = /(?:\d+\.)?\d+\s(?:OZ|oz|Ounce|ounce)/g;
+  if (partern.exec(name)) return weightUtil.convertWeight(partern.exec(name)[0]);
 
   return '';
 }
@@ -74,11 +67,17 @@ function getUSInformation(name, url, weight, callback) {
       var price = $('#cerberus-data-metrics', html).prop('data-asin-price');
 
       if (!price) price = $('.priceBlockBuyingPriceString', html).first().text();
-      if (price) price = price.replace(/,|\$/g, '');
-
-      if (!weight) {
-        weight = getWeight(name, html)
+      if (!price) price = $('.offer-price', html).first().text();
+      if (price) {
+        price = price.replace(/,|\$/g, '');
+        if (price.includes('-')) {
+          price = price.slice(0, price.indexOf('-')).trim();
+        }
       }
+
+      // if (!weight) {
+      weight = getWeight(name, html)
+      // }
 
       callback(null, price, weight);
     })
