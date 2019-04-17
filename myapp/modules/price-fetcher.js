@@ -91,7 +91,7 @@ function getProducts(keyword, chKeyword, callback) {
 
 function updateProductWeight(product) {
   if (!product.WEIGHT) {
-    feature.getWeight(product.NAME, 'https://www.amazon.com' + product.URL, (err, w) => {
+    feature.fetchWeight(product.NAME, 'https://www.amazon.com' + product.URL, (err, w) => {
       if (!err) {
         models.Product.updateWeight(product.ID, w, (err, result) => {
           console.log(err);
