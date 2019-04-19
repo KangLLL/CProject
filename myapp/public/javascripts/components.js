@@ -114,7 +114,7 @@ class PriceComp extends React.Component {
 
   render() {
     return (
-      <div className="container">
+      <div>
         <div className="row">
           <CookieSelect name="Currency" options={[USCURRENCY, CHNCURRENCY]} selected={this.state.currency} onChange={c => this.handleCurrencyChange(c)} />
           <div className="col-sm-1">

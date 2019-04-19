@@ -52,12 +52,21 @@ function insertOrUpdateCHProduct(products, callback) {
   insertOrUpdateProduct(products, false, callback);
 }
 
-function insertComparision(usId, chId, callback) {
+function insertComparison(usId, chId, callback) {
   db.stage(cfg)
-    .execute('insert into comparison (USID, CHID) values (?, ?)', [usId, chId])
+    .execute('insert into comparison (USID, CHID) values (?, ?) on duplicate key update VOTE=VOTE + 1', [usId, chId])
     .finale((err, results) => {
       if (err) return callback(err);
       callback(null, results[0]);
+    });
+}
+
+function loadComparisonByName(name, callback) {
+  db.stage(cfg)
+    .query('select up.NAME as USNAME, cp.NAME as CHNAME, up.IMAGE as USIMAGE, cp.IMAGE as CHIMAGE, cp.URL as CHURL from comparison com inner join usproduct up on up.ID=com.USID and up.NAME=? inner join chproduct cp on cp.ID=com.CHID order by com.VOTE desc', [name])
+    .finale((err, results) => {
+      if (err) return callback(err);
+      callback(null, results);
     });
 }
 
@@ -70,8 +79,8 @@ function updateWeight(id, weight, callback) {
     });
 }
 
-function getTopRankingProducts(top, rate, isFromUS, callback) {
-  var queryCmd = 'select up.NAME as NAME, cp.NAME as CHNAME, up.URL as URL, cp.URL as CHURL, up.WEIGHT, up.PRICE as USPRICE, cp.PRICE as CHPRICE, (cp.PRICE * ? - up.PRICE) / up.WEIGHT as profit from usproduct up inner join comparison com on com.USID=up.ID inner join chproduct cp on cp.ID=com.CHID where up.WEIGHT is not null order by profit ' + (isFromUS ? 'desc' : 'asc') + ' limit ?';
+function getTopRankingProducts(top, rate, credible, isFromUS, callback) {
+  var queryCmd = 'select up.NAME as NAME, cp.NAME as CHNAME, up.URL as URL, cp.URL as CHURL, up.WEIGHT, up.PRICE as USPRICE, cp.PRICE as CHPRICE, (cp.PRICE * ? - up.PRICE) / up.WEIGHT as profit from usproduct up inner join comparison com on com.USID=up.ID inner join chproduct cp on cp.ID=com.CHID where up.WEIGHT is not null' + (credible ? ' and com.VOTE > (select AVG(VOTE) from comparison) ' : ' ') + 'order by profit ' + (isFromUS ? 'desc' : 'asc') + ' limit ?';
   db.stage(cfg)
     .query(queryCmd, [rate, top])
     .finale((err, results) => {
@@ -79,12 +88,12 @@ function getTopRankingProducts(top, rate, isFromUS, callback) {
     });
 }
 
-function getTopRankingProductForUS(top, rate, callback) {
-  getTopRankingProducts(top, rate, true, callback);
+function getTopRankingProductForUS(top, rate, credible, callback) {
+  getTopRankingProducts(top, rate, credible, true, callback);
 }
 
-function getTopRankingProductForChina(top, rate, callback) {
-  getTopRankingProducts(top, rate, false, callback);
+function getTopRankingProductForChina(top, rate, credible, callback) {
+  getTopRankingProducts(top, rate, credible, false, callback);
 }
 
 module.exports = {
@@ -93,7 +102,8 @@ module.exports = {
   insertOrUpdateCHProduct: insertOrUpdateCHProduct,
   loadUSProductByName: loadUSProductByName,
   loadCHProductByName: loadCHProductByName,
-  insertComparision: insertComparision,
+  insertComparison: insertComparison,
+  loadComparisonByName, loadComparisonByName,
   updateWeight: updateWeight,
   getTopRankingProductForUS: getTopRankingProductForUS,
   getTopRankingProductForChina: getTopRankingProductForChina

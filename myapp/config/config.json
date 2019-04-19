@@ -1,5 +1,6 @@
 {
     "exchangeRateRefreshDay": 3,
     "priceRefreshDay": 1,
-    "amazonTop": 1
+    "amazonTop": 1,
+    "RankCount": 20
 }

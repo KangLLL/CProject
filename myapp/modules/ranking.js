@@ -1,18 +1,19 @@
 const models = require('../models');
 const algorithm = require('./algorithm');
 const exchange = require('./exchange');
+const config = require('../config/config');
 
 function mapFunction(result) {
   return { usName: result.NAME, usPrice: parseFloat(result.USPRICE), chName: result.CHNAME, chPrice: parseFloat(result.CHPRICE), weight: parseFloat(result.WEIGHT), url: result.URL, churl: result.CHURL };
 }
 
-function getTopProfitProducts(top, callback) {
+function getTopProfitProducts(top, credible, callback) {
   exchange.getRateFromCNYToUSD((err, rate) => {
     if (err) return callback(err);
-    models.Product.getTopRankingProductForUS(top, rate, (err, results) => {
+    models.Product.getTopRankingProductForUS(top, rate, credible, (err, results) => {
       if (err) return callback(err);
       const us = results.map(mapFunction);
-      models.Product.getTopRankingProductForChina(top, rate, (err, results) => {
+      models.Product.getTopRankingProductForChina(top, rate, credible, (err, results) => {
         if (err) return callback(err);
         const chn = results.map(mapFunction);
         callback(null, us, chn);
@@ -42,13 +43,13 @@ function getRecommendProducts(weight, isFromUS, callback) {
   exchange.getRateFromCNYToUSD((err, rate) => {
     if (err) return callback(err);
     if (isFromUS) {
-      models.Product.getTopRankingProductForUS(20, rate, (err, results) => {
+      models.Product.getTopRankingProductForUS(config.RankCount, rate, (err, results) => {
         if (err) return callback(err);
         processResult(results, weight, rate, isFromUS, callback);
       });
     }
     else {
-      models.Product.getTopRankingProductForChina(20, rate, (err, results) => {
+      models.Product.getTopRankingProductForChina(config.RankCount, rate, (err, results) => {
         if (err) return callback(err);
         processResult(results, weight, rate, isFromUS, callback);
       });

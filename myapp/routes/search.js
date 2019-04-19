@@ -18,10 +18,10 @@ router.post('/', function (req, res, next) {
   
   var chKeyword = req.body.chname || keyword;
   
-  priceFetcher.getProducts(keyword, chKeyword, (err, usproducts, chproducts) => {
+  priceFetcher.getProducts(keyword, chKeyword, (err, usproducts, chproducts, comparisons) => {
     if (err && err.message) return next(err);
     if (!usproducts || !chproducts || usproducts.length == 0 || chproducts.length == 0) return res.render('no-product', { title: 'No result' });
-    res.render('product', { title: 'Products', us: usproducts, ch: chproducts });
+    res.render('product', { title: 'Products', us: usproducts, ch: chproducts, com: comparisons });
   });
 });
 

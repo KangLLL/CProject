@@ -41,6 +41,7 @@ CREATE TABLE `comparison` (
   `ID` bigint(20) NOT NULL AUTO_INCREMENT,
   `USID` bigint(20) NOT NULL,
   `CHID` bigint(20) NOT NULL,
+  `VOTE` bigint(20) DEFAULT 1,
   PRIMARY KEY(`ID`),
   KEY `IDX_PRODUCT` (`USID`, `CHID`),
   CONSTRAINT `PRICE_PRODUCT_FK1` FOREIGN KEY (`USID`) REFERENCES `usproduct` (`ID`),

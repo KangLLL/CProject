@@ -28,17 +28,44 @@ function getProducts(keyword, chKeyword, callback) {
         });
       },
       (cb) => {
-        jd.getPrice(chKeyword, name, price, (err, products) => {
-          products.forEach((product) => {
-            product.price = product.price.replace(/,|￥|¥/g, '');
-          });
-          if (err) return cb(err);
-          if (products.length == 0) return cb(new Error(''));
-          models.Product.insertOrUpdateCHProduct(products, (err) => {
+        async.parallel(
+          [
+            (cb) => {
+              jd.getPrice(chKeyword, name, price, (err, products) => {
+                products.forEach((product) => {
+                  product.price = product.price.replace(/,|￥|¥/g, '');
+                });
+                if (err) return cb(err);
+                if (products.length == 0) return cb(new Error(''));
+                models.Product.insertOrUpdateCHProduct(products, (err) => {
+                  if (err) return cb(err);
+                  cb(null, products);
+                });
+              });
+            },
+            (cb) => {
+              models.Product.loadComparisonByName(name, (err, products) => {
+                if (err) return cb(err);
+                cb(null, products);
+              })
+            }
+          ], (err, results) => {
             if (err) return cb(err);
-            cb(null, products);
-          });
-        });
+            var set = new Set();
+            var result = [];
+            results[1].forEach((obj) => {
+              set.add(obj.CHNAME);
+              result.push({ name: obj.CHNAME, url: obj.CHURL, image: obj.CHIMAGE });
+            });
+            results[0].forEach((obj) => {
+              if (!set.has(obj.name)) {
+                result.push({ name: obj.name, url: obj.url, image: obj.image });
+              }
+            })
+
+            cb(null, result);
+          }
+        );
       }
     ], (err, results) => {
       if (err) return callback(err);
@@ -120,7 +147,7 @@ function getPrices(usName, chName, callback) {
       }
     ], (err, result) => {
       if (err) return callback(err);
-      models.Product.insertComparision(result[0].ID, result[1].ID, (e, r) => {
+      models.Product.insertComparison(result[0].ID, result[1].ID, (e, r) => {
       });
       callback(null, { usName: result[0].NAME, usPrice: parseFloat(result[0].PRICE), chName: result[1].NAME, chPrice: parseFloat(result[1].PRICE), url: result[0].URL, churl: result[1].URL });
     });

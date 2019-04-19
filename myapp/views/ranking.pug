@@ -1,7 +1,28 @@
 extends layout
+block resource
+  link(rel="stylesheet", href='/stylesheets/style.css')
 
 block content
-  .container#root
+  .container
+    .row
+      .col-sm-2
+        strong Show Only
+        br
+        a(href="./rank?credibility=all").check-box-com All
+          - if  (isCred) {
+            span.float-right.check-box-image
+          - } else {
+            span.float-right.check-box-checked-image
+          - }         
+        br
+        a(href="./rank?credibility=high").check-box-com High Credibility
+          - if  (isCred) {
+            span.float-right.check-box-checked-image
+          - } else {
+            span.float-right.check-box-image
+          - }     
+      .col-sm-10#root
+  
   script(src="https://unpkg.com/react@16/umd/react.development.js" crossorigin)
   script(src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin)
   script(src="https://unpkg.com/babel-standalone@6/babel.min.js")
