@@ -11,8 +11,8 @@ block content
       p loading...
   .container
     .row
-      .col-sm
-      .col-sm
+      .col-sm-2
+      .col-sm-8
         form(method="POST", action="./recommend", onsubmit="$('#loader').show();$('.container').hide();")
           .form-group
             label(for="weight") Please input the capacity your luggage
@@ -27,6 +27,11 @@ block content
               select#direction.form-control(name="direction", required)
                option(value="1") From US To China
                option(value="2") From China To US
+          .row
+            label.custom-control.custom-checkbox
+              input(type="checkbox", name="credible", value="yes")#chnamecheck.custom-control-input
+              span.custom-control-indicator
+              span.custom-control-description Only use high credibility product
           <hr>
           button.btn.btn-primary(type="submit") Get Recommendation 
-      .col-sm
+      .col-sm-2
