@@ -1,0 +1,15 @@
+extends user-layout
+block content
+  .container
+    .row
+      .col-sm-2
+      .col-sm-8
+        .h4.mt-5 Create a New User
+        form(action="./")
+          label(for="email") Email
+          input(type="email", name="email", autofocuse='autofocuse', placeholder='email', required)#email.form-control
+          label(for="password") Password 
+          input(type="password", name="password", placeholder='password', required)#password.form-control
+          hr
+          input(type="submit", name="submit", value="Create").btn.btn-primary
+      .col-sm-2
