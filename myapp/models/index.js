@@ -5,6 +5,7 @@ var async = require('async');
 var models = {
   ExchangeRate: require('./exchange-rate'),
   Product: require('./product'),
+  User: require('./user'),
   init: (callback) => {
     if (!callback) callback = () => { };
 
@@ -12,6 +13,7 @@ var models = {
       [
         (callback) => { models.ExchangeRate.init(dbcfg, models, callback); },
         (callback) => { models.Product.init(dbcfg, models, callback); },
+        (callback) => { models.User.init(dbcfg, models, callback); }
       ], (err) => {
         if (err) return callback(err);
         callback();
