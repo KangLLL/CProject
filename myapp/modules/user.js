@@ -5,7 +5,7 @@ function signUp(email, password, callback) {
   models.User.loadByEmail(email, (err, result) => {
     if (err) return callback(err);
     if (result) return callback(null, null);
-    bcrypt.hash(password, 2019, (err, hashedPassword) => {
+    bcrypt.hash(password, 5, (err, hashedPassword) => {
       if (err) return callback(err);
       models.User.insert(email, hashedPassword, (err, result) => {
         if (err) return callback(err);

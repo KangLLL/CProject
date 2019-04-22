@@ -9,10 +9,10 @@ function init(_cfg, _models, callback) {
 
 function insert(email, password, callback) {
   db.stage(cfg)
-    .execute('insert into user(EMAIL, PASSWORD) values(?, ?)', [email, hashedPassword])
+    .execute('insert into user(EMAIL, PASSWORD) values(?, ?)', [email, password])
     .finale((err, results) => {
       if (err) return callback(err);
-      return callback(null, results[0]);
+      return callback(null, results);
     });
 }
 
