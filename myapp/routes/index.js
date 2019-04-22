@@ -3,8 +3,7 @@ var router = express.Router();
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
-  // res.render('index', { title: 'Price Comparison System' });
-  res.render('login', { title: 'sign up' });
+  res.render('index', { title: 'Price Comparison System' });
 });
 
 module.exports = router;
