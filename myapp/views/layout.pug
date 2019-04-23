@@ -21,7 +21,13 @@ html
             a.h4.text-white.nav-link(href="/currency") Exchanging Currency
           li.nav-item
             a.h4.text-white.nav-link(href="/tax") Sales Taxes
+      - if (user) {
+      .my-2
+        a.h4.text-primary.nav-link(href="/users/logout") Log out
+      - } else {
       .my-2
         a.h4.text-primary.nav-link(href="/users/login") Login
+      - }
+      
 
     block content

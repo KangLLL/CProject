@@ -21,7 +21,7 @@ function login(email, password, callback) {
     if (!result) return callback(null, null);
     bcrypt.compare(password, result.PASSWORD, (err, same) => {
       if (err) return callback(err);
-      return callback(null, same);
+      return callback(null, same ? result.ID : '');
     });
   });
 }

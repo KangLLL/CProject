@@ -38,6 +38,11 @@ app.use(session({
   saveUninitialized: false
 }));
 
+app.use(function (req, res, next) {
+  if (req.session.user) res.locals.user = req.session.user; 
+  next();
+});
+
 app.use('/', index);
 app.use('/search', search);
 app.use('/tax', tax);

@@ -57,13 +57,20 @@ router.post('/login', loginValidate, function (req, res, next) {
     user.login(req.body.email, req.body.password, (err, result) => {
       if (err) return next(err);
       if (result == null) return res.render('login', { title: 'Login', email: req.body.email, password: req.body.password, errs: [{ msg: 'The email was not registered yet' }] });
-      if (!result) return res.render('login', { title: 'Login', email: req.body.email, password: req.body.password, errs: [{ msg: 'The password is incorrect' }] });
+      if (result.length == 0) return res.render('login', { title: 'Login', email: req.body.email, password: req.body.password, errs: [{ msg: 'The password is incorrect' }] });
+      req.session.user = result;
       res.redirect('/');
     });
   }
   else {
     res.render('login', { title: 'Login', email: req.body.email, password: req.body.password, errs: errors.array() });
   }
+});
+
+/* Logout User */
+router.get('/logout', function (req, res, next) {
+  req.session.destroy();
+  res.redirect('/');
 });
 
 module.exports = router;
