@@ -57,6 +57,15 @@ function insertComparison(usId, chId, callback) {
     .execute('insert into comparison (USID, CHID) values (?, ?) on duplicate key update VOTE=VOTE + 1', [usId, chId])
     .finale((err, results) => {
       if (err) return callback(err);
+      callback(null, results);
+    });
+}
+
+function loadComparisonById(usId, chId, callback) {
+  db.stage(cfg)
+    .query('select * from comparison where USID=? and CHID=?', [usId, chId])
+    .finale((err, results) => {
+      if (err) return callback(err);
       callback(null, results[0]);
     });
 }
@@ -103,6 +112,7 @@ module.exports = {
   loadUSProductByName: loadUSProductByName,
   loadCHProductByName: loadCHProductByName,
   insertComparison: insertComparison,
+  loadComparisonById: loadComparisonById,
   loadComparisonByName, loadComparisonByName,
   updateWeight: updateWeight,
   getTopRankingProductForUS: getTopRankingProductForUS,

@@ -15,9 +15,9 @@ router.get('/', function (req, res, next) {
 router.post('/', function (req, res, next) {
   var keyword = req.body.name;
   if (!keyword) return res.render('no-product', { title: 'No result' });
-  
+
   var chKeyword = req.body.chname || keyword;
-  
+
   priceFetcher.getProducts(keyword, chKeyword, (err, usproducts, chproducts, comparisons) => {
     if (err && err.message) return next(err);
     if (!usproducts || !chproducts || usproducts.length == 0 || chproducts.length == 0) return res.render('no-product', { title: 'No result' });
@@ -26,7 +26,7 @@ router.post('/', function (req, res, next) {
 });
 
 router.get('/price', function (req, res, next) {
-  priceFetcher.getPrices(decodeURIComponent(req.query.name), decodeURIComponent(req.query.chName), (err, price) => {
+  priceFetcher.getPrices(decodeURIComponent(req.query.name), decodeURIComponent(req.query.chName), req.session.user, (err, price) => {
     if (err) return next(err);
     exchange.getExchangeRates((err, result) => {
       if (err) return next(err);

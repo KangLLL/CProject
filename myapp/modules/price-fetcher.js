@@ -129,7 +129,7 @@ function updateProductWeight(product) {
   }
 }
 
-function getPrices(usName, chName, callback) {
+function getPrices(usName, chName, userId, callback) {
   async.series(
     [
       (cb) => {
@@ -148,6 +148,14 @@ function getPrices(usName, chName, callback) {
     ], (err, result) => {
       if (err) return callback(err);
       models.Product.insertComparison(result[0].ID, result[1].ID, (e, r) => {
+        if (e == null && userId) {
+          models.Product.loadComparisonById(result[0].ID, result[1].ID, (e, r) => {
+            if (r) {
+              models.Interest.insert(userId, r.ID, date.currentDate(), (e, r) => {
+              });
+            }
+          });
+        }
       });
       callback(null, { usName: result[0].NAME, usPrice: parseFloat(result[0].PRICE), chName: result[1].NAME, chPrice: parseFloat(result[1].PRICE), url: result[0].URL, churl: result[1].URL });
     });
