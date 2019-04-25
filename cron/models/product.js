@@ -25,6 +25,15 @@ function updateCHPrice(id, price, callback) {
   updatePrice(id, price, false, callback);
 }
 
+function loadAllUSProducts(callback) {
+  db.stage(cfg)
+    .query('select ID, NAME, URL, PRICE, WEIGHT, CATEGORY from usproduct')
+    .finale((err, results) => {
+      if (err) return callback(err);
+      callback(null, results);
+    });
+}
+
 function loadComparisonProducts(isUS, callback) {
   var queryCmd = 'select distinct(' + (isUS ? 'USID' : 'CHID') + ') from comparison';
   db.stage(cfg)
@@ -94,7 +103,7 @@ function updateProduct(id, price, weight, category, callback) {
   var update = (id, price, weight, category, callback) => {
     var exeCmd = 'update usproduct set PRICE=?';
     var params = [price];
-    
+
     if (weight) {
       exeCmd = exeCmd + ', WEIGHT=?';
       params.push(weight);
@@ -136,5 +145,6 @@ module.exports = {
   loadUSProducts: loadUSProducts,
   loadCHProducts: loadCHProducts,
   updateProduct: updateProduct,
-  insertCategory: insertCategory
+  insertCategory: insertCategory,
+  loadAllUSProducts: loadAllUSProducts
 };
