@@ -52,7 +52,7 @@ function customWhereIn(columnName, values) {
 }
 
 function loadProducts(ids, isUS, callback) {
-  var queryCmd = 'select ID, NAME, URL' + (isUS ? ', WEIGHT ' : ' ') + 'from ' + (isUS ? 'usproduct ' : 'chproduct ') + customWhereIn('ID', ids);
+  var queryCmd = 'select ID, NAME, URL, PRICE' + (isUS ? ', WEIGHT, CATEGORY ' : ' ') + 'from ' + (isUS ? 'usproduct ' : 'chproduct ') + customWhereIn('ID', ids);
   db.stage(cfg)
     .query(queryCmd)
     .finale((err, results) => {
@@ -69,13 +69,62 @@ function loadCHProducts(ids, callback) {
   loadProducts(ids, false, callback);
 }
 
-function updateWeight(id, weight, callback) {
+function insertCategory(category, callback) {
   db.stage(cfg)
-    .execute('update usproduct set WEIGHT=? where ID=?', [weight, id])
+    .query('select ID from category where NAME=?', [category])
     .finale((err, results) => {
       if (err) return callback(err);
-      callback(null, results[0]);
+      if (results.length == 0) {
+        db.stage(cfg)
+          .execute('insert into category(NAME) values(?)', [category])
+          .query('select ID from category where NAME=?', [category])
+          .finale((err, results) => {
+            if (err) return callback(err);
+            if (results[1].length == 0) return callback(null, null);
+            callback(null, results[1][0].ID);
+          });
+      }
+      else {
+        callback(null, results[0].ID);
+      }
     });
+}
+
+function updateProduct(id, price, weight, category, callback) {
+  var update = (id, price, weight, category, callback) => {
+    var exeCmd = 'update usproduct set PRICE=?';
+    var params = [price];
+    
+    if (weight) {
+      exeCmd = exeCmd + ', WEIGHT=?';
+      params.push(weight);
+    }
+    if (category) {
+      exeCmd = exeCmd + ', CATEGORY=?';
+      params.push(category);
+    }
+
+    exeCmd = exeCmd + ' where ID=?';
+    params.push(id);
+
+    db.stage(cfg)
+      .execute(exeCmd, params)
+      .finale((err, results) => {
+        if (err) return callback(err);
+        callback(null, results);
+      });
+  };
+
+  if (category && isNaN(parseInt(category))) {
+    insertCategory(category, (err, res) => {
+      if (err) return callback(err);
+      if (!res) return callback(null, null);
+      update(id, price, weight, res, callback);
+    });
+  }
+  else {
+    update(id, price, weight, category, callback);
+  }
 }
 
 module.exports = {
@@ -86,5 +135,6 @@ module.exports = {
   loadCHComparisonProducts: loadCHComparisonProducts,
   loadUSProducts: loadUSProducts,
   loadCHProducts: loadCHProducts,
-  updateWeight: updateWeight
+  updateProduct: updateProduct,
+  insertCategory: insertCategory
 };

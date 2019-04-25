@@ -60,7 +60,11 @@ function getWeight(name, html) {
   return '';
 }
 
-function getUSInformation(name, url, weight, callback) {
+function getCategory(html) {
+  return $('#wayfinding-breadcrumbs_feature_div ul', html).children().first().text().trim();
+}
+
+function getUSInformation(name, url, weight, category, callback) {
   axios.get(url)
     .then(res => {
       var html = res.data;
@@ -75,11 +79,15 @@ function getUSInformation(name, url, weight, callback) {
         }
       }
 
-      // if (!weight) {
-      weight = getWeight(name, html)
-      // }
+      if (!category) {
+        category = getCategory(html);
+      }
 
-      callback(null, price, weight);
+      if (!weight) {
+        weight = getWeight(name, html)
+      }
+
+      callback(null, price, weight, category);
     })
     .catch(err => {
       callback(err, null, null);
