@@ -16,15 +16,8 @@ models.init((err) => {
                   // if (result.WEIGHT) return cb();
                   fetcher.getUSInformation(result.NAME, 'https://www.amazon.com' + result.URL, result.WEIGHT, result.CATEGORY, (err, price, weight, category) => {
                     if (!err) {
-                      models.Product.updateUSPrice(result.ID, price, (e, r) => {
-                        if (weight != result.WEIGHT) {
-                          models.Product.updateWeight(result.ID, weight, (e, r) => {
-                            setTimeout(() => { cb(); }, 30000);
-                          });
-                        }
-                        else {
-                          setTimeout(() => { cb(); }, 30000);
-                        }
+                      models.Product.updateProduct(result.ID, price, weight, category, (e, r) => {
+                        setTimeout(() => { cb(); }, 30000);
                       });
                     }
                     else {
