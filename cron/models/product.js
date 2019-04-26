@@ -27,7 +27,7 @@ function updateCHPrice(id, price, callback) {
 
 function loadAllUSProducts(callback) {
   db.stage(cfg)
-    .query('select ID, NAME, URL, PRICE, WEIGHT, CATEGORY from usproduct')
+    .query('select ID, NAME, URL, PRICE, WEIGHT, CATEGORY from usproduct where CATEGORY is null')
     .finale((err, results) => {
       if (err) return callback(err);
       callback(null, results);
