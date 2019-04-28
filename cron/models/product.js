@@ -25,6 +25,15 @@ function updateCHPrice(id, price, callback) {
   updatePrice(id, price, false, callback);
 }
 
+function loadNameAndCategory(callback) {
+  db.stage(cfg)
+    .query('select NAME, CATEGORY from usproduct where CATEGORY is not null')
+    .finale((err, results)=> {
+      if (err) return callback(err);
+      callback(null, results);
+    });
+}
+
 function loadAllUSProducts(callback) {
   db.stage(cfg)
     .query('select ID, NAME, URL, PRICE, WEIGHT, CATEGORY from usproduct where CATEGORY is null')
@@ -146,5 +155,6 @@ module.exports = {
   loadCHProducts: loadCHProducts,
   updateProduct: updateProduct,
   insertCategory: insertCategory,
-  loadAllUSProducts: loadAllUSProducts
+  loadAllUSProducts: loadAllUSProducts,
+  loadNameAndCategory: loadNameAndCategory
 };
