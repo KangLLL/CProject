@@ -9,5 +9,6 @@
 /cron/config/db.json
 
 # misc
+/ml/.idea
 .DS_Store
 
