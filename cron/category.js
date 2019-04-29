@@ -23,7 +23,7 @@ models.init((err) => {
             };
           }), (err) => {
             console.log(err);
-            process.exit(1);
+            process.exit(0);
           });
       }
     });

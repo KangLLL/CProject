@@ -27,10 +27,16 @@ function updateCHPrice(id, price, callback) {
 
 function loadNameAndCategory(callback) {
   db.stage(cfg)
-    .query('select NAME, CATEGORY from usproduct where CATEGORY is not null')
-    .finale((err, results)=> {
+    .query('select CATEGORY from usproduct where CATEGORY is not null group by(CATEGORY) having count(*)>100')
+    .finale((err, results) => {
       if (err) return callback(err);
-      callback(null, results);
+      var qryCmd = 'select NAME, CATEGORY from usproduct ' + customWhereIn('CATEGORY', results.map(r => r.CATEGORY));
+      db.stage(cfg)
+        .query(qryCmd)
+        .finale((err, results) => {
+          if (err) return callback(err);
+          callback(null, results);
+        });
     });
 }
 

@@ -23,7 +23,7 @@ models.init((err) => {
         csvWriter.writeRecords(results)
           .then(() => {
             console.log('done');
-
+            process.exit(0);
             // var results = [];
             // fs.createReadStream('out.csv')
             //   .pipe(csv())
