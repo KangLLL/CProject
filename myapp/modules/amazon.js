@@ -20,7 +20,7 @@ function getPrice(name, callback) {
 
 
 
-      $('h5 span', html).each((i, ele) => {
+      $('h2.a-size-mini span', html).each((i, ele) => {
         if ($(ele).closest('.s-shopping-adviser').length == 0 && !$(ele).closest('.sg-col-inner').find('.a-color-secondary').first().text().includes('Sponsored') && $(ele).closest('.sg-col-inner').parent().closest('.sg-col-inner').find('.a-offscreen').length > 0) {
           var temp = $(ele).text();
 

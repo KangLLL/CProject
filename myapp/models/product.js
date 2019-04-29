@@ -79,14 +79,44 @@ function loadComparisonByName(name, callback) {
     });
 }
 
-function updateWeight(id, weight, callback) {
-  db.stage(cfg)
-    .execute('update usproduct set WEIGHT=? where ID=?', [weight, id])
-    .finale((err, results) => {
+function updateProduct(id, price, weight, category, callback) {
+  var update = (id, price, weight, category, callback) => {
+    var exeCmd = 'update usproduct set PRICE=?';
+    var params = [price];
+
+    if (weight) {
+      exeCmd = exeCmd + ', WEIGHT=?';
+      params.push(weight);
+    }
+    if (category) {
+      exeCmd = exeCmd + ', CATEGORY=?';
+      params.push(category);
+    }
+
+    exeCmd = exeCmd + ' where ID=?';
+    params.push(id);
+
+    db.stage(cfg)
+      .execute(exeCmd, params)
+      .finale((err, results) => {
+        if (err) return callback(err);
+        callback(null, results);
+      });
+  };
+
+  if (category && isNaN(parseInt(category))) {
+    insertCategory(category, (err, res) => {
       if (err) return callback(err);
-      callback(null, results[0]);
+      if (!res) return callback(null, null);
+      update(id, price, weight, res, callback);
     });
+  }
+  else {
+    update(id, price, weight, category, callback);
+  }
 }
+
+
 
 function getTopRankingProducts(top, rate, credible, isFromUS, callback) {
   var queryCmd = 'select up.NAME as NAME, cp.NAME as CHNAME, up.URL as URL, cp.URL as CHURL, up.WEIGHT, up.PRICE as USPRICE, cp.PRICE as CHPRICE, (cp.PRICE * ? - up.PRICE) / up.WEIGHT as profit from usproduct up inner join comparison com on com.USID=up.ID inner join chproduct cp on cp.ID=com.CHID where up.WEIGHT is not null' + (credible ? ' and com.VOTE > (select AVG(VOTE) from comparison) ' : ' ') + 'order by profit ' + (isFromUS ? 'desc' : 'asc') + ' limit ?';
@@ -114,7 +144,7 @@ module.exports = {
   insertComparison: insertComparison,
   loadComparisonById: loadComparisonById,
   loadComparisonByName, loadComparisonByName,
-  updateWeight: updateWeight,
+  updateProduct: updateProduct,
   getTopRankingProductForUS: getTopRankingProductForUS,
   getTopRankingProductForChina: getTopRankingProductForChina
 };

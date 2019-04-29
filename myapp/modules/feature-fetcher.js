@@ -58,19 +58,23 @@ function getWeight(name, html) {
   return '';
 }
 
-function fetchWeight(name, url, callback) {
+function getCategory(html) {
+  return $('#wayfinding-breadcrumbs_feature_div ul', html).children().first().text().trim();
+}
+
+function fetchFeature(name, url, callback) {
   setTimeout(() => {
     axios.get(url)
       .then(res => {
         var html = res.data;
-        callback(null, getWeight(name, html));
+        callback(null, getWeight(name, html), getCategory(html));
       })
       .catch(err => {
-        callback(err, null);
+        callback(err, null, null);
       });
   }, 1000);
 }
 
 module.exports = {
-  fetchWeight: fetchWeight
+  fetchFeature: fetchFeature
 }

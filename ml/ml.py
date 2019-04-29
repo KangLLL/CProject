@@ -16,7 +16,7 @@ print(Y[0])
 kf = KFold(10, True, 2)
 clf = svm.SVC(gamma='scale')
 
-lin_clf = svm.LinearSVC()
+lin_clf = svm.LinearSVC(C=1)
 
 for train_index, test_index in kf.split(X):
     clf.fit(X[train_index], Y[train_index])

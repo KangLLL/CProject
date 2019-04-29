@@ -13,11 +13,11 @@ models.init((err) => {
               fetcher.getUSInformation(result.NAME, 'https://www.amazon.com' + result.URL, result.WEIGHT, result.CATEGORY, (err, price, weight, category) => {
                 if (!err) {
                   models.Product.updateProduct(result.ID, price, weight, category, (e, r) => {
-                    setTimeout(() => { cb(); }, 30000);
+                    setTimeout(() => { cb(); }, 10000);
                   });
                 }
                 else {
-                  setTimeout(() => { cb(); }, 30000);
+                  setTimeout(() => { cb(); }, 10000);
                 }
               });
             };
