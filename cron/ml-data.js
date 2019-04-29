@@ -24,17 +24,17 @@ models.init((err) => {
           .then(() => {
             console.log('done');
 
-            var results = [];
-            fs.createReadStream('out.csv')
-              .pipe(csv())
-              .on('data', (data) => results.push(data))
-              .on('end', () => {
-                console.log(results);
+            // var results = [];
+            // fs.createReadStream('out.csv')
+            //   .pipe(csv())
+            //   .on('data', (data) => results.push(data))
+            //   .on('end', () => {
+            //     console.log(results);
 
-                results.forEach(result => {
-                  console.log(result.name);
-                });
-              });
+            //     results.forEach(result => {
+            //       console.log(result.name);
+            //     });
+            //   });
           });
       }
     });
