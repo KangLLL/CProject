@@ -7,8 +7,10 @@
 # config
 /myapp/config/db.json
 /cron/config/db.json
+/ml/db_config.py
 
 # misc
 /ml/.idea
+/ml/*.pyc
 .DS_Store
 
