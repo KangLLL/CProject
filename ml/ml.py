@@ -27,20 +27,35 @@ finally:
 # data = pd.read_csv('../cron/out.csv')
 #
 if data is not None:
-    vectorizer = TfidfVectorizer()
+    # stop_words = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '100ml']
+    words = []
+    prefix = ''
+    for i in range(0, 5):
+        for j in range(0, 10):
+            words.append(prefix + str(j))
+        prefix += '0'
+    # print(words)
+    vectorizer = TfidfVectorizer(stop_words = words)
     X = vectorizer.fit_transform(data['name'])
+
+    print(vectorizer.get_feature_names())
+    print(len(vectorizer.get_feature_names()))
+
     Y = data['category']
 
     print(Y[0])
 
-    kf = KFold(10, False, 2)
-    clf = svm.SVC(gamma='scale')
+    fold = 10
+    kf = KFold(fold, False, 2)
+    clf = svm.SVC(kernel='rbf', gamma=0.01, C=100)
 
-    lin_clf = svm.LinearSVC(C=1)
+    # lin_clf = svm.LinearSVC(C=1)
+
+    percs = 0
 
     for train_index, test_index in kf.split(X):
         clf.fit(X[train_index], Y[train_index])
-        lin_clf.fit(X[train_index], Y[train_index])
+        # lin_clf.fit(X[train_index], Y[train_index])
         i = 0
         correct = 0
         total = len(test_index)
@@ -52,7 +67,10 @@ if data is not None:
             if y == Y[test_index].values[i]:
                 i += 1
                 correct += 1
+        percs += correct / total
         print(correct / total)
+
+    print(percs / fold)
 
 
 # print(vectorizer.get_feature_names())
