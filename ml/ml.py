@@ -72,6 +72,5 @@ if data is not None:
 
     print(percs / fold)
 
-
 # print(vectorizer.get_feature_names())
 # print(response.toarray())
