@@ -7,6 +7,10 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.model_selection import KFold
 from sklearn import svm
 
+from sklearn.metrics import  confusion_matrix
+import  matplotlib.pyplot as plt
+
+
 data = None
 
 try:
@@ -40,6 +44,7 @@ if data is not None:
 
     print(vectorizer.get_feature_names())
     print(len(vectorizer.get_feature_names()))
+    print(X.shape)
 
     Y = data['category']
 
@@ -59,6 +64,10 @@ if data is not None:
         i = 0
         correct = 0
         total = len(test_index)
+
+        conf_mat = confusion_matrix(Y[test_index], clf.predict(X[test_index]))
+        fig, ax = plt.subplots(figsize=(10,10))
+
         for y in clf.predict(X[test_index]):
         # for y in lin_clf.predict(X[test_index]):
             # print('=====')
