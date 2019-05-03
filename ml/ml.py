@@ -37,9 +37,7 @@ finally:
     cursor.close()
     conn.close()
 
-data = pd.read_csv('../cron/out.csv')
-
-if data is not None:
+if data is not None and len(dict) > 0:
     words = []
     prefix = ''
     for i in range(0, 5):
@@ -64,13 +62,10 @@ if data is not None:
 
     vs = Y.drop_duplicates().sort_values()
 
-    temp = vs.map(dict)
-    # print(vs)
-    # print(temp)
+    names = vs.map(dict)
 
     for train_index, test_index in kf.split(X):
         clf.fit(X[train_index], Y[train_index])
-        # lin_clf.fit(X[train_index], Y[train_index])
         i = 0
         correct = 0
         total = len(test_index)
@@ -91,18 +86,13 @@ if data is not None:
         fig, ax = plt.subplots(figsize=(10,10))
 
 
-
-        heat_map = sns.heatmap(conf_mat, annot=True, fmt='d', xticklabels=temp.values, yticklabels=temp.values)
+        heat_map = sns.heatmap(conf_mat, annot=True, fmt='d', xticklabels=names.values, yticklabels=names.values)
         heat_map.set_xticklabels(heat_map.get_xticklabels(), rotation=0)
         plt.ylabel('Actual')
         plt.xlabel('Predicted')
 
 
         for y in pres:
-        # for y in lin_clf.predict(X[test_index]):
-            # print('=====')
-            # print(y)
-            # print(Y[test_index].values[i])
             if y == acts[i]:
                 correct += 1
             # else:
