@@ -3,6 +3,7 @@ from mysql.connector import MySQLConnection, Error
 from db_config import connection_dict
 
 import pandas as pd
+import  collections
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.model_selection import KFold
 from sklearn import svm
@@ -67,7 +68,17 @@ if data is not None:
         correct = 0
         total = len(test_index)
 
-        conf_mat = confusion_matrix(Y[test_index], clf.predict(X[test_index]))
+        pres = clf.predict(X[test_index])
+
+        # print(type(pres))
+        #
+        # print(collections.Counter(pres))
+        # print(collections.Counter(Y[test_index]))
+        #
+        # print(pres)
+        # print(Y[test_index].values)
+
+        conf_mat = confusion_matrix(Y[test_index], pres)
         fig, ax = plt.subplots(figsize=(10,10))
 
 
@@ -77,16 +88,16 @@ if data is not None:
         plt.xlabel('Predicted')
 
 
-        for y in clf.predict(X[test_index]):
+        for y in pres:
         # for y in lin_clf.predict(X[test_index]):
             # print('=====')
             # print(y)
             # print(Y[test_index].values[i])
             if y == Y[test_index].values[i]:
-                i += 1
                 correct += 1
-            else:
-                print('pre:' + y + ',act:' + Y[test_index].values[i])
+            # else:
+            #     print('pre:' + str(y) + ',act:' + str(Y[test_index].values[i]) + ',total:' + str(i))
+            i += 1
         percs += correct / total
         print(correct / total)
         plt.show()
