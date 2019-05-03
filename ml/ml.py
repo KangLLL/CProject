@@ -13,14 +13,22 @@ import  matplotlib.pyplot as plt
 import seaborn as sns
 
 data = None
+dict = {}
 
 try:
     conn = MySQLConnection(**connection_dict)
     cursor = conn.cursor()
-    cursor.execute("select NAME, CATEGORY from usproduct where CATEGORY in (select CATEGORY from usproduct where CATEGORY is not null group by(CATEGORY) having count(*)>100)")
+    cursor.execute('select NAME, CATEGORY from usproduct where CATEGORY in (select CATEGORY from usproduct where CATEGORY is not null group by(CATEGORY) having count(*)>100)')
+    rows = cursor.fetchall()
+    data = pd.DataFrame(rows, columns=['name', 'category'])
+
+    cursor.execute('select ID, NAME from category')
     rows = cursor.fetchall()
 
-    data = pd.DataFrame(rows, columns=['name', 'category'])
+    df = pd.DataFrame(rows, columns=['id', 'name'])
+    for index, row in df.iterrows():
+        dict[row['id']] = str(row['name'])
+
 
 except Error as e:
     print(e)
@@ -29,10 +37,9 @@ finally:
     cursor.close()
     conn.close()
 
-# data = pd.read_csv('../cron/out.csv')
-#
+data = pd.read_csv('../cron/out.csv')
+
 if data is not None:
-    # stop_words = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '100ml']
     words = []
     prefix = ''
     for i in range(0, 5):
@@ -49,17 +56,17 @@ if data is not None:
 
     Y = data['category']
 
-    print(Y[0])
-
     fold = 10
     kf = KFold(fold, False, 2)
-    clf = svm.SVC(kernel='rbf', gamma=0.01, C=100)
-
-    # lin_clf = svm.LinearSVC(C=1)
+    clf = svm.SVC(kernel='linear',C=10)
 
     percs = 0
 
     vs = Y.drop_duplicates().sort_values()
+
+    temp = vs.map(dict)
+    # print(vs)
+    # print(temp)
 
     for train_index, test_index in kf.split(X):
         clf.fit(X[train_index], Y[train_index])
@@ -70,7 +77,9 @@ if data is not None:
 
         pres = clf.predict(X[test_index])
 
-        # print(type(pres))
+        pres = list(map(lambda t:dict[t], pres))
+
+        acts = list(map(lambda t:dict[t], Y[test_index]))
         #
         # print(collections.Counter(pres))
         # print(collections.Counter(Y[test_index]))
@@ -78,12 +87,13 @@ if data is not None:
         # print(pres)
         # print(Y[test_index].values)
 
-        conf_mat = confusion_matrix(Y[test_index], pres)
+        conf_mat = confusion_matrix(acts, pres)
         fig, ax = plt.subplots(figsize=(10,10))
 
 
 
-        sns.heatmap(conf_mat, annot=True, fmt='d', xticklabels=vs.values, yticklabels=vs.values)
+        heat_map = sns.heatmap(conf_mat, annot=True, fmt='d', xticklabels=temp.values, yticklabels=temp.values)
+        heat_map.set_xticklabels(heat_map.get_xticklabels(), rotation=0)
         plt.ylabel('Actual')
         plt.xlabel('Predicted')
 
@@ -93,7 +103,7 @@ if data is not None:
             # print('=====')
             # print(y)
             # print(Y[test_index].values[i])
-            if y == Y[test_index].values[i]:
+            if y == acts[i]:
                 correct += 1
             # else:
             #     print('pre:' + str(y) + ',act:' + str(Y[test_index].values[i]) + ',total:' + str(i))
