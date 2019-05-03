@@ -9,7 +9,7 @@ from sklearn import svm
 
 from sklearn.metrics import  confusion_matrix
 import  matplotlib.pyplot as plt
-
+import seaborn as sns
 
 data = None
 
@@ -58,6 +58,8 @@ if data is not None:
 
     percs = 0
 
+    vs = Y.drop_duplicates().sort_values()
+
     for train_index, test_index in kf.split(X):
         clf.fit(X[train_index], Y[train_index])
         # lin_clf.fit(X[train_index], Y[train_index])
@@ -68,6 +70,13 @@ if data is not None:
         conf_mat = confusion_matrix(Y[test_index], clf.predict(X[test_index]))
         fig, ax = plt.subplots(figsize=(10,10))
 
+
+
+        sns.heatmap(conf_mat, annot=True, fmt='d', xticklabels=vs.values, yticklabels=vs.values)
+        plt.ylabel('Actual')
+        plt.xlabel('Predicted')
+
+
         for y in clf.predict(X[test_index]):
         # for y in lin_clf.predict(X[test_index]):
             # print('=====')
@@ -76,8 +85,11 @@ if data is not None:
             if y == Y[test_index].values[i]:
                 i += 1
                 correct += 1
+            else:
+                print('pre:' + y + ',act:' + Y[test_index].values[i])
         percs += correct / total
         print(correct / total)
+        plt.show()
 
     print(percs / fold)
 
