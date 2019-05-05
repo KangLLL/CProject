@@ -3,10 +3,14 @@ from mysql.connector import MySQLConnection, Error
 from db_config import connection_dict
 
 import pandas as pd
+import numpy as np
 import  collections
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.model_selection import KFold
+from sklearn.model_selection import cross_val_score
 from sklearn import svm
+from sklearn.naive_bayes import MultinomialNB, GaussianNB, BernoulliNB
+from sklearn.linear_model import LogisticRegression
 
 from sklearn.metrics import  confusion_matrix
 import  matplotlib.pyplot as plt
@@ -57,6 +61,9 @@ if data is not None and len(dict) > 0:
     fold = 10
     kf = KFold(fold, False, 2)
     clf = svm.SVC(kernel='linear',C=10)
+    nb = MultinomialNB()
+    nb = BernoulliNB()
+    lr = LogisticRegression()
 
     percs = 0
 
@@ -64,13 +71,21 @@ if data is not None and len(dict) > 0:
 
     names = vs.map(dict)
 
+    scores = cross_val_score(lr, X, Y, cv=10)
+    print(scores)
+
     for train_index, test_index in kf.split(X):
         clf.fit(X[train_index], Y[train_index])
+        nb.fit(X[train_index], Y[train_index])
+        lr.fit(X[train_index], Y[train_index])
+
         i = 0
         correct = 0
         total = len(test_index)
 
         pres = clf.predict(X[test_index])
+        pres = nb.predict(X[test_index])
+        pres = lr.predict(X[test_index])
 
         pres = list(map(lambda t:dict[t], pres))
 
@@ -100,7 +115,7 @@ if data is not None and len(dict) > 0:
             i += 1
         percs += correct / total
         print(correct / total)
-        plt.show()
+        # plt.show()
 
     print(percs / fold)
 
