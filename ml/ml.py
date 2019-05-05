@@ -73,6 +73,15 @@ if data is not None and len(dict) > 0:
 
     scores = cross_val_score(lr, X, Y, cv=10)
     print(scores)
+    print(np.mean(scores))
+
+    scores = cross_val_score(clf, X, Y, cv=10)
+    print(scores)
+    print(np.mean(scores))
+
+    scores = cross_val_score(nb, X, Y, cv=10)
+    print(scores)
+    print(np.mean(scores))
 
     for train_index, test_index in kf.split(X):
         clf.fit(X[train_index], Y[train_index])
