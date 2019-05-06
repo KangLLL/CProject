@@ -12,11 +12,22 @@ function insert(userId, comparisonId, date, callback) {
     .execute('insert into interest(USERID, COMPAREID, DATE) values(?, ?, ?)', [userId, comparisonId, date])
     .finale((err, results) => {
       if (err) return callback(err);
-      return callback(null, results);
+      callback(null, results);
     });
 }
 
+function loadInterestCategory(userId, callback) {
+  db.stage(cfg)
+    .query('select distinct(up.CATEGORY) from comparison com inner join usproduct up on up.ID=com.USID inner join interest it on it.USERID=? and it.COMPAREID=com.ID', [userId])
+    .finale((err, results) => {
+      if (err) return callback(err);
+      callback(null, results);
+    });
+}
+
+
 module.exports = {
   init: init,
-  insert: insert
+  insert: insert,
+  loadInterestCategory: loadInterestCategory
 };

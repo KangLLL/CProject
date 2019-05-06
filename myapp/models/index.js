@@ -7,6 +7,7 @@ var models = {
   Product: require('./product'),
   User: require('./user'),
   Interest: require('./interest'),
+  Promotion: require('./promotion'),
   init: (callback) => {
     if (!callback) callback = () => { };
 
@@ -15,7 +16,8 @@ var models = {
         (callback) => { models.ExchangeRate.init(dbcfg, models, callback); },
         (callback) => { models.Product.init(dbcfg, models, callback); },
         (callback) => { models.User.init(dbcfg, models, callback); },
-        (callback) => { models.Interest.init(dbcfg, models, callback); }
+        (callback) => { models.Interest.init(dbcfg, models, callback); },
+        (callback) => { models.Promotion.init(dbcfg, models, callback); }
       ], (err) => {
         if (err) return callback(err);
         callback();
