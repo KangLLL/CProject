@@ -109,12 +109,10 @@ if data is not None and len(dict) > 0:
         conf_mat = confusion_matrix(acts, pres)
         fig, ax = plt.subplots(figsize=(10,10))
 
-
         heat_map = sns.heatmap(conf_mat, annot=True, fmt='d', xticklabels=names.values, yticklabels=names.values)
         heat_map.set_xticklabels(heat_map.get_xticklabels(), rotation=0)
         plt.ylabel('Actual')
         plt.xlabel('Predicted')
-
 
         for y in pres:
             if y == acts[i]:
