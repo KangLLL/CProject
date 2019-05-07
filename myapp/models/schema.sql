@@ -82,7 +82,6 @@ CREATE TABLE `category` (
 CREATE TABLE `promotion` (
   `ID` bigint(20) NOT NULL AUTO_INCREMENT,
   `NAME` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `IMAGE` varchar(1000) CHARACTER SET latin1 COLLATE latin1_bin NOT NULL,
   `CATEGORY` bigint(20) DEFAULT NULL,
   `DATE` datetime NOT NULL,
   PRIMARY KEY(`ID`),

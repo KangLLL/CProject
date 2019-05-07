@@ -151,6 +151,22 @@ function updateProduct(id, price, weight, category, callback) {
   }
 }
 
+function insertOrUpdatePromotion(promotions, date, callback) {
+  var exeCmd = 'insert into promotion (NAME, DATE) values (?, ?) on duplicate key update DATE = ?';
+  var params = [];
+  promotions.forEach((promotion) => {
+    params.push([promotion.name,
+      date,
+      date]);
+  });
+  db.stage(cfg)
+    .execute(exeCmd, params)
+    .finale((err, results) => {
+      if (err) return callback(err);
+      callback(null, results[0]);
+    });
+}
+
 module.exports = {
   init: init,
   updateUSPrice: updateUSPrice,
@@ -162,5 +178,6 @@ module.exports = {
   updateProduct: updateProduct,
   insertCategory: insertCategory,
   loadAllUSProducts: loadAllUSProducts,
-  loadNameAndCategory: loadNameAndCategory
+  loadNameAndCategory: loadNameAndCategory,
+  insertOrUpdatePromotion: insertOrUpdatePromotion
 };

@@ -34,13 +34,13 @@ function insertOrUpdateProduct(products, isUS, callback) {
     product.image,
     product.url,
     product.price,
-    product.image])
+    product.image]);
   });
   db.stage(cfg)
     .execute(exeCmd, params)
     .finale((err, results) => {
       if (err) return callback(err);
-      else return callback(err, results[0]);
+      callback(null, results[0]);
     });
 }
 
