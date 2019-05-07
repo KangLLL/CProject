@@ -9,7 +9,8 @@ const translate = require('../modules/translate');
 
 /* Product Search */
 router.get('/', function (req, res, next) {
-  res.render('search', { title: 'Search Item' });
+  var keyword = req.query.keyword ? decodeURIComponent(req.query.keyword) : '';
+  res.render('search', { title: 'Search Item', keyword: keyword});
 });
 
 router.post('/', function (req, res, next) {

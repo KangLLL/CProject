@@ -16,7 +16,7 @@ block content
         form(method="POST", action="./search", onsubmit="$('#loader').show();$('.container').hide();")
           .form-group
             label(for="name") Please input the item you want to compare
-            input#name.form-control(type="text", name="name",required, autofocus="autofocus",placeholder="name")
+            input#name.form-control(type="text", name="name",required, autofocus="autofocus",placeholder="name", value=keyword)
             span.col-form-label-sm Example:
               strong iphone 8, samsung galaxy s9
             br

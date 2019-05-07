@@ -2,5 +2,6 @@
     "exchangeRateRefreshDay": 3,
     "priceRefreshDay": 1,
     "amazonTop": 1,
-    "RankCount": 20
+    "rankCount": 20,
+    "promotionCount": 10
 }

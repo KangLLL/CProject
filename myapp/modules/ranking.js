@@ -43,13 +43,13 @@ function getRecommendProducts(weight, isFromUS, credible, callback) {
   exchange.getRateFromCNYToUSD((err, rate) => {
     if (err) return callback(err);
     if (isFromUS) {
-      models.Product.getTopRankingProductForUS(config.RankCount, rate, credible, (err, results) => {
+      models.Product.getTopRankingProductForUS(config.rankCount, rate, credible, (err, results) => {
         if (err) return callback(err);
         processResult(results, weight, rate, isFromUS, callback);
       });
     }
     else {
-      models.Product.getTopRankingProductForChina(config.RankCount, rate, credible, (err, results) => {
+      models.Product.getTopRankingProductForChina(config.rankCount, rate, credible, (err, results) => {
         if (err) return callback(err);
         processResult(results, weight, rate, isFromUS, callback);
       });

@@ -10,7 +10,7 @@ const config = require('../config/config');
 router.get('/', function (req, res, next) {
   var cred = req.query.credibility;
   var isCred = cred == 'high';
-  ranking.getTopProfitProducts(config.RankCount, isCred, (err, usPrice, chnPrice) => {
+  ranking.getTopProfitProducts(config.rankCount, isCred, (err, usPrice, chnPrice) => {
     if (err) return next(err);
     exchange.getExchangeRates((err, result) => {
       if (err) return next(err);

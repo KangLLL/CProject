@@ -1,5 +1,14 @@
 extends layout
 
 block content
-  h1= title
-  p Welcome to #{title}
+  .container
+    .h4 Welcome to #{title}
+    p.text-info Recent Promotions
+    table.table.table-striped
+      tbody
+        - promotions.forEach((promotion)=>{
+          tr
+            td.cell
+              a(href="/search?keyword="+encodeURIComponent(promotion.NAME)) 
+                strong #{promotion.NAME}
+        - })
