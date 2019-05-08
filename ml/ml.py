@@ -12,7 +12,7 @@ from sklearn import svm
 from sklearn.naive_bayes import MultinomialNB, GaussianNB, BernoulliNB
 from sklearn.linear_model import LogisticRegression
 
-from sklearn.metrics import  confusion_matrix
+from sklearn.metrics import confusion_matrix
 import  matplotlib.pyplot as plt
 import seaborn as sns
 
@@ -160,6 +160,19 @@ def predict(clf, X):
     Y = clf.predict(X)
     return Y
 
+def save_predict_data(data, result):
+    try:
+        conn = MySQLConnection(**connection_dict)
+        cursor = conn.cursor()
+        cursor.executemany('update promotion set CATEGORY = %s where NAME = %s', zip(result, data))
+        conn.commit()
+
+    except Error as e:
+        print(e)
+
+    finally:
+        cursor.close()
+        conn.close()
 
 if __name__ == '__main__':
     data, dict = get_training_data()
@@ -167,12 +180,13 @@ if __name__ == '__main__':
         X, Y, vectorizer = process_data(data)
         # model_comparison(X, Y)
         # show_model_heat_map(X, Y, dict)
+
+        print('start train')
         clf = train_model(X, Y)
 
         test = get_predict_data()
         if test is not None:
+            print('start predict')
             result = predict(clf, vectorizer.transform(test['name']))
-
-
-# print(vectorizer.get_feature_names())
-# print(response.toarray())
+            print('start save')
+            save_predict_data(test['name'].values, list(map(lambda r:int(r), result)))
