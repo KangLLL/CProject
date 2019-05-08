@@ -3,6 +3,17 @@ extends layout
 block content
   .container
     .h4 Welcome to #{title}
+    - if (interests) {
+      p.text-info Your May Interest Promotions
+      table.table.table-striped
+        tbody
+        - interests.forEach((promotion)=>{
+          tr
+            td.cell
+              a(href="/search?keyword="+encodeURIComponent(promotion.NAME)) 
+                strong #{promotion.NAME}
+        - })
+    - }
     p.text-info Recent Promotions
     table.table.table-striped
       tbody
