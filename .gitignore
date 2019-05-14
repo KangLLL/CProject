@@ -10,6 +10,7 @@
 /ml/db_config.py
 
 # misc
+/cron/*.exe
 /ml/.idea
 /ml/*.pyc
 .DS_Store
