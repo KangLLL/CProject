@@ -12,8 +12,9 @@ from sklearn import svm
 from sklearn.naive_bayes import MultinomialNB, GaussianNB, BernoulliNB
 from sklearn.linear_model import LogisticRegression
 
+
 from sklearn.metrics import confusion_matrix
-import  matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 import seaborn as sns
 
 
@@ -60,33 +61,59 @@ def process_data(data):
 def model_comparison(X, Y):
     print('Naive Bayes Score:')
     variables = [0.001, 0.01, 0.1, 0.5, 1, 10]
+    scores = []
     for alpha in variables:
         nb = MultinomialNB(alpha=alpha)
-        scores = cross_val_score(nb, X, Y, cv=10)
-        print('smoothing parameter alpha=%.3f, score:%.4f'%(alpha, np.mean(scores)))
-
+        score = cross_val_score(nb, X, Y, cv=10)
+        print('smoothing parameter alpha=%.3f, score:%.4f'%(alpha, np.mean(score)))
+        scores.append(np.mean(score))
+    plt.plot(variables, scores, 'bo', variables, scores, 'k')
+    plt.ylabel('Accuracy', fontsize=26)
+    plt.xlabel('Alpha', fontsize=26)
+    plt.title('Multinomial Naive Bayes', fontsize=28)
+    plt.show()
 
     print('Logistic Regression Score:')
     variables = [0.01, 0.1, 1, 10, 100]
+    scores = []
     for c in variables:
         lr = LogisticRegression(C=c, solver='lbfgs', multi_class='auto')
-        scores = cross_val_score(lr, X, Y, cv=10)
-        print('regularization strength C=%.2f, score:%.4f'%(c, np.mean(scores)))
-
+        score = cross_val_score(lr, X, Y, cv=10)
+        print('regularization strength C=%.2f, score:%.4f'%(c, np.mean(score)))
+        scores.append(np.mean(score))
+    plt.plot(variables, scores, 'bo', variables, scores, 'k')
+    plt.ylabel('Accuracy', fontsize=26)
+    plt.xlabel('C', fontsize=26)
+    plt.title('Logistic Regression', fontsize=28)
+    plt.show()
 
     print('SVM with Linear Kernel Score:')
     variables = [0.01, 0.1, 1, 10, 100]
+    scores = []
     for c in variables:
         clf = svm.SVC(kernel='linear', C=c)
-        scores = cross_val_score(clf, X, Y, cv=10)
-        print('penalty parameter C=%.2f, score:%.4f' % (c, np.mean(scores)))
+        score = cross_val_score(clf, X, Y, cv=10)
+        print('penalty parameter C=%.2f, score:%.4f' % (c, np.mean(score)))
+        scores.append(np.mean(score))
+    plt.plot(variables, scores, 'ro', variables, scores, 'k')
+    plt.ylabel('Accuracy', fontsize=26)
+    plt.xlabel('C', fontsize=26)
+    plt.title('SVM with Linear Kernel', fontsize=28)
+    plt.show()
 
     print('SVM with rbf Kernel Score:')
     variables = [0.01, 0.1, 1, 10]
+    scores = []
     for c in variables:
         clf = svm.SVC(kernel='rbf', C=c, gamma='scale')
-        scores = cross_val_score(clf, X, Y, cv=10)
-        print('penalty parameter C=%.2f, score:%.4f' % (c, np.mean(scores)))
+        score = cross_val_score(clf, X, Y, cv=10)
+        print('penalty parameter C=%.2f, score:%.4f' % (c, np.mean(score)))
+        scores.append(np.mean(score))
+    plt.plot(variables, scores, 'ro', variables, scores, 'k')
+    plt.ylabel('Accuracy', fontsize=26)
+    plt.xlabel('C', fontsize=26)
+    plt.title('SVM with rbf Kernel', fontsize=28)
+    plt.show()
 
 def show_model_heat_map(X, Y, dict):
     names = Y.drop_duplicates().sort_values().map(dict)
@@ -179,14 +206,14 @@ if __name__ == '__main__':
     if data is not None and len(dict) > 0:
         X, Y, vectorizer = process_data(data)
         # model_comparison(X, Y)
-        # show_model_heat_map(X, Y, dict)
+        show_model_heat_map(X, Y, dict)
 
-        print('start train')
-        clf = train_model(X, Y)
-
-        test = get_predict_data()
-        if test is not None:
-            print('start predict')
-            result = predict(clf, vectorizer.transform(test['name']))
-            print('start save')
-            save_predict_data(test['name'].values, list(map(lambda r:int(r), result)))
+        # print('start train')
+        # clf = train_model(X, Y)
+        #
+        # test = get_predict_data()
+        # if test is not None:
+        #     print('start predict')
+        #     result = predict(clf, vectorizer.transform(test['name']))
+        #     print('start save')
+        #     save_predict_data(test['name'].values, list(map(lambda r:int(r), result)))
