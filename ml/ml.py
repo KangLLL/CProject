@@ -58,20 +58,26 @@ def process_data(data):
     Y = data['category']
     return (X, Y, vectorizer)
 
+def plot_result(x, y, title, xlabel, ylabel):
+    plt.plot(x, y, 'bo', x, y, 'k')
+    plt.ylabel(ylabel, fontsize=36)
+    plt.xlabel(xlabel, fontsize=36)
+    plt.title(title, fontsize=38)
+    plt.tick_params(labelsize=36)
+    plt.show()
+
 def model_comparison(X, Y):
     print('Naive Bayes Score:')
     variables = [0.001, 0.01, 0.1, 0.5, 1, 10]
     scores = []
+
     for alpha in variables:
         nb = MultinomialNB(alpha=alpha)
         score = cross_val_score(nb, X, Y, cv=10)
         print('smoothing parameter alpha=%.3f, score:%.4f'%(alpha, np.mean(score)))
         scores.append(np.mean(score))
-    plt.plot(variables, scores, 'bo', variables, scores, 'k')
-    plt.ylabel('Accuracy', fontsize=26)
-    plt.xlabel('Alpha', fontsize=26)
-    plt.title('Multinomial Naive Bayes', fontsize=28)
-    plt.show()
+
+    plot_result(variables, scores, 'Multinomial Naive Bayes', 'Alpha', 'Accuracy')
 
     print('Logistic Regression Score:')
     variables = [0.01, 0.1, 1, 10, 100]
@@ -81,11 +87,8 @@ def model_comparison(X, Y):
         score = cross_val_score(lr, X, Y, cv=10)
         print('regularization strength C=%.2f, score:%.4f'%(c, np.mean(score)))
         scores.append(np.mean(score))
-    plt.plot(variables, scores, 'bo', variables, scores, 'k')
-    plt.ylabel('Accuracy', fontsize=26)
-    plt.xlabel('C', fontsize=26)
-    plt.title('Logistic Regression', fontsize=28)
-    plt.show()
+
+    plot_result(variables, scores, 'Logistic Regression', 'C', 'Accuracy')
 
     print('SVM with Linear Kernel Score:')
     variables = [0.01, 0.1, 1, 10, 100]
@@ -95,11 +98,8 @@ def model_comparison(X, Y):
         score = cross_val_score(clf, X, Y, cv=10)
         print('penalty parameter C=%.2f, score:%.4f' % (c, np.mean(score)))
         scores.append(np.mean(score))
-    plt.plot(variables, scores, 'ro', variables, scores, 'k')
-    plt.ylabel('Accuracy', fontsize=26)
-    plt.xlabel('C', fontsize=26)
-    plt.title('SVM with Linear Kernel', fontsize=28)
-    plt.show()
+
+    plot_result(variables, scores, 'SVM with Linear Kernel', 'C', 'Accuracy')
 
     print('SVM with rbf Kernel Score:')
     variables = [0.01, 0.1, 1, 10]
@@ -109,11 +109,8 @@ def model_comparison(X, Y):
         score = cross_val_score(clf, X, Y, cv=10)
         print('penalty parameter C=%.2f, score:%.4f' % (c, np.mean(score)))
         scores.append(np.mean(score))
-    plt.plot(variables, scores, 'ro', variables, scores, 'k')
-    plt.ylabel('Accuracy', fontsize=26)
-    plt.xlabel('C', fontsize=26)
-    plt.title('SVM with rbf Kernel', fontsize=28)
-    plt.show()
+
+    plot_result(variables, scores, 'SVM with rbf Kernel', 'C', 'Accuracy')
 
 def show_model_heat_map(X, Y, dict):
     names = Y.drop_duplicates().sort_values().map(dict)
@@ -208,14 +205,14 @@ if __name__ == '__main__':
     if data is not None and len(dict) > 0:
         X, Y, vectorizer = process_data(data)
         # model_comparison(X, Y)
-        show_model_heat_map(X, Y, dict)
+        # show_model_heat_map(X, Y, dict)
 
-        # print('start train')
-        # clf = train_model(X, Y)
-        #
-        # test = get_predict_data()
-        # if test is not None:
-        #     print('start predict')
-        #     result = predict(clf, vectorizer.transform(test['name']))
-        #     print('start save')
-        #     save_predict_data(test['name'].values, list(map(lambda r:int(r), result)))
+        print('start train')
+        clf = train_model(X, Y)
+
+        test = get_predict_data()
+        if test is not None:
+            print('start predict')
+            result = predict(clf, vectorizer.transform(test['name']))
+            print('start save')
+            save_predict_data(test['name'].values, list(map(lambda r:int(r), result)))

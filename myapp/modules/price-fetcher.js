@@ -117,7 +117,7 @@ function getProducts(keyword, chKeyword, callback) {
 // }
 
 function updateProductWeight(product) {
-  if (!product.WEIGHT) {
+  if (!product.WEIGHT || !product.CATEGORY) {
     feature.fetchFeature(product.NAME, 'https://www.amazon.com' + product.URL, (err, w, c) => {
       if (!err) {
         models.Product.updateProduct(product.ID, product.PRICE, w, c, (err, result) => {

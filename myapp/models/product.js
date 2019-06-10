@@ -79,6 +79,27 @@ function loadComparisonByName(name, callback) {
     });
 }
 
+function insertCategory(category, callback) {
+  db.stage(cfg)
+    .query('select ID from category where NAME=?', [category])
+    .finale((err, results) => {
+      if (err) return callback(err);
+      if (results.length == 0) {
+        db.stage(cfg)
+          .execute('insert into category(NAME) values(?)', [category])
+          .query('select ID from category where NAME=?', [category])
+          .finale((err, results) => {
+            if (err) return callback(err);
+            if (results[1].length == 0) return callback(null, null);
+            callback(null, results[1][0].ID);
+          });
+      }
+      else {
+        callback(null, results[0].ID);
+      }
+    });
+}
+
 function updateProduct(id, price, weight, category, callback) {
   var update = (id, price, weight, category, callback) => {
     var exeCmd = 'update usproduct set PRICE=?';

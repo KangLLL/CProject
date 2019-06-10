@@ -59,7 +59,12 @@ function getWeight(name, html) {
 }
 
 function getCategory(html) {
-  return $('#wayfinding-breadcrumbs_feature_div ul', html).children().first().text().trim();
+  var category = $('#wayfinding-breadcrumbs_feature_div ul', html).children().first().text().trim();
+  if (category) return category;
+
+  category = $('#wayfinding-breadcrumbs_container ul', html).children().first().text().trim();
+
+  return category;
 }
 
 function fetchFeature(name, url, callback) {
